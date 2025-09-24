@@ -42,7 +42,7 @@ if ($conn->connect_error) {
 
 $errors = [];
 $success = "";
-$adminUsernames = ['isaackan', 'lilkey\'s', 'suspect44', 'jedida', 'loic', 'loïc'];
+$adminUsernames = [''];
 
 if (isset($_GET['google_signup'])) {
     $redirect_uri = urlencode('https://thundramusic.infinityfreeapp.com/authenticate.php');
@@ -482,3 +482,4 @@ $conn->close();
 </body>
 
 </html>
+
