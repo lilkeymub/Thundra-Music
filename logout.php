@@ -1,4 +1,3 @@
-```php
 <?php
 // Start session
 session_start();
@@ -19,4 +18,3 @@ if (isset($_COOKIE['remember_token']) || isset($_COOKIE['remember_user'])) {
 header('Location: login.php');
 exit();
 ?>
-```
