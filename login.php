@@ -21,11 +21,11 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Configuration
-define('STYTCH_PROJECT_ID', 'project-live-a9260d05-5dbe-4c03-8eab-d56c1f202890');
-define('STYTCH_SECRET', 'secret-live-kydsqMHf1leDE2iKqTobSbDrIvZV0hh8G1U=');
-define('STYTCH_PUBLIC_TOKEN', 'public-token-live-f6fd17b9-bcd4-41f9-bddf-d858e30bb3e4');
-define('WALLET_CONNECT_PROJECT_ID', 'acf0ba32fd83fd3d60552342707cd3dc');
-define('CONTRACT_ADDRESS', '0xc335Df7C25b72eEC661d5Aa32a7c2B7b2a1D1874');
+define('STYTCH_PROJECT_ID', '');
+define('STYTCH_SECRET', '');
+define('STYTCH_PUBLIC_TOKEN', '');
+define('WALLET_CONNECT_PROJECT_ID', '');
+define('CONTRACT_ADDRESS', '');
 
 /// Database connection
 $host = '';
@@ -642,3 +642,4 @@ $conn->close();
 </body>
 
 </html>
+
