@@ -11,11 +11,12 @@ ini_set('max_execution_time', 60);
 session_start();
 
 // Connexion à la base de données avec mysqli
-$host = 'sql209.infinityfree.com';
-$dbname = 'if0_38852888_thundramusic';
-$username = 'if0_38852888';
-$password = 'Malinga7';
-$port = 3306;
+// Database connection
+$host = '';
+$dbname = '';
+$username = '';
+$password = '';
+$port = ;
 
 $conn = new mysqli($host, $username, $password, $dbname, $port);
 
@@ -28,7 +29,7 @@ $errors = [];
 $success = "";
 
 // Liste des noms d'utilisateurs réservés pour les administrateurs (insensible à la casse)
-$adminUsernames = ['isaackan', 'lilkey\'s', 'suspect44', 'jedida', 'loic', 'loïc'];
+$adminUsernames = [''];
 
 // Gestion du formulaire
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -405,4 +406,5 @@ $conn->close();
         }
     </script>
 </body>
+
 </html>
