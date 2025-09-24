@@ -1,0 +1,100 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - About Us</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 dark:bg-gray-900 p-4 flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-red-600"><i class="fas fa-music mr-2"></i> Thundra Music</h2>
+        <div>
+            <a href="welcome.html" class="text-red-600 hover:underline mx-2"><i class="fas fa-home mr-2"></i> Home</a>
+            <a href="about.html" class="text-red-600 hover:underline mx-2"><i class="fas fa-info-circle mr-2"></i> About</a>
+            <a href="login.html" class="text-red-600 hover:underline mx-2"><i class="fas fa-sign-in-alt mr-2"></i> Login</a>
+            <a href="signup.html" class="text-red-600 hover:underline mx-2"><i class="fas fa-user-plus mr-2"></i> Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto text-center py-8">
+        <!-- About Section -->
+        <section class="my-12">
+            <h1 class="text-5xl font-bold text-red-600">About Us</h1>
+            <p class="text-lg mt-4 max-w-3xl mx-auto">Meet the team behind Thundra Music, dedicated to democratizing the music industry.</p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mt-8 max-w-6xl mx-auto">
+                <div class="bg-gray-200 dark:bg-gray-800 p-6 rounded">
+                    <h3 class="text-xl font-semibold">Lilian Mubandilwa</h3>
+                    <p class="text-sm mt-2">CEO & Head of Technology</p>
+                    <p class="text-sm mt-2">With a technological background in Software Engineering and Web Development, plus an enthusiasm in Blockchain, cryptos and AI technologies, Lilian is well positioned to bring a revolution in the Blockchain & AI Industry through Music by democratizing and give access to it to millions around the world through a hybrid system solution. He also worked on framework to make possible large easy-onboarding of Web 2 people to Web 3 world.</p>
+                </div>
+                <div class="bg-gray-200 dark:bg-gray-800 p-6 rounded">
+                    <h3 class="text-xl font-semibold">Jedidia Efongo</h3>
+                    <p class="text-sm mt-2">Head of Marketing & Communication</p>
+                    <p class="text-sm mt-2">Got a strong expertize in social media impact and promotion. Being in that space for more than 3 years, he built many communities through platforms like Facebook and Instagram and helped them in daily interactions and engagements and onboard masses to his groups and forums. Now, he envisions to work with Thunder Music to bring that same level of engagements and onboarding spirit into the new decentralized revolution of Music.</p>
+                </div>
+                <div class="bg-gray-200 dark:bg-gray-800 p-6 rounded">
+                    <h3 class="text-xl font-semibold">Isaac Kanembwe</h3>
+                    <p class="text-sm mt-2">Head of Products</p>
+                    <p class="text-sm mt-2">He has been so eager to be into something great like this. Geek on AI models and technologies related, he has a oustanding and deep knowledge in training models and categorizing them even if he is not a good coder yet. He developed tremendous products using AI and he is now excited to bring the same impact into Thunder Music ecosystem to leverage and democratize music for all.</p>
+                </div>
+                <div class="bg-gray-200 dark:bg-gray-800 p-6 rounded">
+                    <h3 class="text-xl font-semibold">Loïc Mubandilwa</h3>
+                    <p class="text-sm mt-2">Head of Edition</p>
+                    <p class="text-sm mt-2">Passioned about writings, editing and contents' creation since childhood. He has been writing strategic writings and scripts used now in Cinematographic and Technology area to empower contents and different scenarios played. He is keen to bring the same spirit and impact for Thunder Music also as well in all levels.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer with Policy Links -->
+    <footer class="text-center text-sm py-4">
+        <a href="privacy.html" class="text-red-600 hover:underline mx-2">Privacy Policy</a>
+        <a href="conduct.html" class="text-red-600 hover:underline mx-2">Community Code of Conduct</a>
+        <a href="conditions.html" class="text-red-600 hover:underline mx-2">General User Conditions</a>
+    </footer>
+</body>
+</html>

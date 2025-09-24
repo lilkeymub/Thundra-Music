@@ -1,0 +1,286 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - Pour les Artistes</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        html, body {
+            position: relative;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #e02424;
+            font-size: 1.5rem;
+            z-index: 10;
+        }
+        .container, section, footer, div {
+            position: relative;
+            z-index: 1;
+        }
+        .feature-card {
+            @apply bg-gray-200 dark:bg-gray-800 p-6 rounded-lg shadow-md transition hover:shadow-lg;
+        }
+        .title-with-icon {
+            @apply flex items-center justify-center space-x-3;
+        }
+        @media (max-width: 768px) {
+            h1 { @apply text-4xl; }
+            h2 { @apply text-xl; }
+            p { @apply text-base; }
+            .container { @apply px-4; }
+            .grid { @apply grid-cols-1; }
+            .title-with-icon i { @apply text-3xl; }
+            .feature-card { @apply p-4; }
+            .feature-card h3 { @apply text-lg; }
+            .feature-card p { @apply text-sm; }
+        }
+        @media (max-width: 480px) {
+            h1 { @apply text-2xl; }
+            h2 { @apply text-lg; }
+            p { @apply text-sm; }
+            .container { @apply px-3; }
+            .grid { @apply gap-4; }
+            .title-with-icon i { @apply text-2xl; }
+            button { @apply text-sm px-4 py-2; }
+            .feature-card { @apply p-3; }
+            .feature-card h3 { @apply text-base; }
+            .feature-card p { @apply text-xs; }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i></a>
+    <canvas id="background-canvas"></canvas>
+
+    <div class="container mx-auto text-center pt-16">
+        <div class="title-with-icon">
+            <i class="fas fa-paint-brush text-5xl text-red-600"></i>
+            <h1 class="text-5xl font-bold text-red-600">Pour les Artistes</h1>
+        </div>
+        <p class="text-xl mt-4">Libérez votre créativité et prospérez avec Thundra Market !</p>
+        <br><br>
+
+        <section class="my-8 max-w-5xl mx-auto">
+            <h2 class="text-3xl font-semibold mb-6">Bienvenue sur Thundra Market - Votre scène exclusive</h2>
+            <p class="text-lg mb-6">Thundra Market est votre plateforme dédiée, conçue exclusivement pour les artistes afin de briller comme des stars dans une émission de télé-réalité. Avec un accès complet, vous pouvez téléverser, vendre ou partager vos créations—collections, marchandises, billets d'événements, promotions, invitations, et plus encore—en éditions illimitées ou limitées. Connectez-vous directement avec votre public à travers des espaces de discussion et de groupes sécurisés, le tout soutenu par la technologie décentralisée de la blockchain pour garantir confidentialité et confiance.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1: Creative Expression -->
+                <div class="feature-card">
+                    <i class="fas fa-paint-brush text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Exprimez-vous librement</h3>
+                    <p class="text-base mt-2">Transformez Thundra Market en votre scène personnelle, où vous pouvez mettre en avant votre art, votre musique et votre personnalité. Téléversez des vidéos, des audios ou des actifs numériques, et engagez votre communauté avec des mises à jour en direct, comme dans une narration de télé-réalité, renforçant ainsi un lien unique avec vos fans.</p>
+                </div>
+
+                <!-- Feature 2: Blockchain Security -->
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Sécurité décentralisée avec la blockchain</h3>
+                    <p class="text-base mt-2">Tirez parti de la technologie de pointe de la blockchain pour garantir que chaque transaction et interaction soit sécurisée, transparente et sans intermédiaires. Votre propriété intellectuelle et vos connexions avec vos fans sont protégées par des enregistrements immuables, vous donnant un contrôle total.</p>
+                </div>
+
+                <!-- Feature 3: Monetization Options -->
+                <div class="feature-card">
+                    <i class="fas fa-coins text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Monétisation flexible</h3>
+                    <p class="text-base mt-2">Vendez vos œuvres en utilisant des jetons ICE, proposez des éditions limitées ou offrez des articles gratuits pour élargir votre audience. Fixez vos prix et permettez à vos fans de revendre, l'équipe Thundra ne prenant que 10 % pour alimenter la croissance de l'écosystème.</p>
+                </div>
+
+                <!-- Feature 4: Thundra Ads Integration -->
+                <div class="feature-card">
+                    <i class="fas fa-bullhorn text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Boostez avec Thundra Ads</h3>
+                    <p class="text-base mt-2">Faites la promotion de vos spectacles, interviews ou programmes directement auprès de votre communauté en utilisant Thundra Ads. Touchez un public plus large, améliorez votre visibilité et stimulez l'engagement avec des campagnes ciblées adaptées à votre vision artistique.</p>
+                </div>
+
+                <!-- Feature 5: Community Connection -->
+                <div class="feature-card">
+                    <i class="fas fa-users text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Engagement direct avec les fans</h3>
+                    <p class="text-base mt-2">Utilisez les espaces de discussion et de groupes pour interagir de manière privée et sécurisée avec vos fans. Partagez du contenu en coulisses, organisez des sessions de questions-réponses ou collaborez sur des projets, renforçant ainsi votre communauté sans intermédiaires.</p>
+                </div>
+
+                <!-- Feature 6: Ticket Reselling -->
+                <div class="feature-card">
+                    <i class="fas fa-ticket-alt text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Autonomisez les revendeurs</h3>
+                    <p class="text-base mt-2">Choisissez des utilisateurs de confiance pour revendre vos billets d'événements ou laissez-passer pour vos spectacles. Négociez les prix avec eux ou autorisez des ventes externes pour maximiser les profits, avec plus de détails dans la section Communauté.</p>
+                </div>
+            </div>
+
+            <p class="text-lg mt-6">Soyez votre propre patron avec la révolution Web 3 ! Thundra Learning propose une formation complète pour maîtriser notre écosystème, vous aidant à devenir un artiste engagé et prospère. Avec seulement 10 % des transactions dédiés aux avancées futures, vous conservez la majorité de vos revenus en toute sécurité.</p>
+        </section>
+        <br><br>
+
+        <div class="mt-16">
+            <a href="signup-fr.php" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-rocket mr-2"></i> Commencer</a>
+        </div>
+        <br><br>
+
+        <footer class="text-center text-sm py-4">
+            <div>
+                <a href="privacy.html" class="text-red-600 hover:underline mx-2">Politique de confidentialité</a>
+                <a href="conduct.html" class="text-red-600 hover:underline mx-2">Code de conduite de la communauté</a>
+                <a href="conditions.html" class="text-red-600 hover:underline mx-2">Conditions générales d'utilisation</a>
+                <a href="legal.html" class="text-red-600 hover:underline mx-2">Mentions légales et directives</a>
+            </div>
+            <div class="mt-4">
+                <button id="theme-toggle" class="text-red-600 hover:text-red-700 focus:outline-none">
+                    <i id="theme-icon" class="fas fa-moon text-2xl"></i>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+            document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+        }
+
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            if (document.body.classList.contains('dark')) {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                document.body.classList.remove('dark');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        }
+
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 10;
+                this.speedX = (Math.random() * 2 - 1) * 0.5;
+                this.speedY = (Math.random() * 2 - 1) * 0.5;
+                this.directionY = Math.random() > 0.5 ? 1 : -1;
+                this.text = '♪';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY * this.directionY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillStyle = '#ff0000';
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles.forEach(particle => {
+                particle.x = Math.random() * canvas.width;
+                particle.y = Math.random() * canvas.height;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+    if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+            var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+
+            // Convert sheet to JSON to filter blank rows
+            var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+            // Filter out blank rows (rows where all cells are empty, null, or undefined)
+            var filteredData = jsonData.filter(row => row.some(filledCell));
+
+            // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+            var headerRowIndex = filteredData.findIndex((row, index) =>
+              row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+            );
+            // Fallback
+            if (headerRowIndex === -1 || headerRowIndex > 25) {
+              headerRowIndex = 0;
+            }
+
+            // Convert filtered JSON back to CSV
+            var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+            csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+            return csv;
+        } catch (e) {
+            console.error(e);
+            return "";
+        }
+    }
+    return gk_fileData[filename] || "";
+    }
+</script>
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+    if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+            var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+
+            // Convert sheet to JSON to filter blank rows
+            var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+            // Filter out blank rows (rows where all cells are empty, null, or undefined)
+            var filteredData = jsonData.filter(row => row.some(filledCell));
+
+            // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+            var headerRowIndex = filteredData.findIndex((row, index) =>
+              row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+            );
+            // Fallback
+            if (headerRowIndex === -1 || headerRowIndex > 25) {
+              headerRowIndex = 0;
+            }
+
+            // Convert filtered JSON back to CSV
+            var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+            csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+            return csv;
+        } catch (e) {
+            console.error(e);
+            return "";
+        }
+    }
+    return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thundra Music - Bienvenue</title>
+<link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+    html, body {
+        position: relative;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+    #background-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.05;
+    }
+    .container, section, footer, div {
+        position: relative;
+        z-index: 1;
+    }
+    /* Professional spacing and centering */
+    .header-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 20vh; /* Ensure enough vertical space */
+    }
+    #language-selector {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+    /* Custom styling for the select element to highlight the active language */
+    #language-select {
+        background-color: #dc2626; /* bg-red-600 */
+        color: white;
+        border-radius: 9999px; /* rounded-full */
+        padding: 0.5rem 1rem; /* px-4 py-2 */
+        outline: none;
+        border: 2px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+    #language-select:focus {
+        border-color: white;
+    }
+    /* Cookie Pop-Up Styles */
+    #cookie-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        display: none;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+    #cookie-container {
+        width: 100%;
+        height: 50vh; /* Set to 50% of viewport height */
+        overflow: hidden;
+    }
+    #cookie-content {
+        background: white dark:bg-gray-800;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        max-width: 90%;
+        width: 500px;
+        margin: 0 auto;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translateY(-100%);
+        transition: transform 1.2s ease-in-out, opacity 1.2s ease-in-out;
+        border: 2px solid transparent;
+        background: linear-gradient(to bottom, #ffffff, #f3f4f6) padding-box, linear-gradient(to right, #ff0000, #ff5555) border-box;
+        position: relative;
+        height: 100%;
+        overflow-y: auto; /* Allow scrolling if content overflows */
+        opacity: 0;
+    }
+    #cookie-content.active {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    #cookie-content canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.1;
+    }
+    #cookie-content h2 {
+        color: #ff0000;
+        font-size: 1.5rem;
+        font-weight: bold;
+        position: relative;
+        z-index: 1;
+    }
+    #cookie-content p {
+        color: black dark:text-white;
+        margin: 1rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    #manage-settings {
+        display: none;
+        margin-top: 1rem;
+        text-align: left;
+        position: relative;
+        z-index: 1;
+    }
+    #manage-settings label {
+        color: black dark:text-white;
+        display: block;
+        margin: 0.5rem 0;
+    }
+    #manage-settings button {
+        margin-top: 1rem;
+    }
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        h1 {
+            @apply text-3xl;
+        }
+        p {
+            @apply text-base;
+        }
+        .container {
+            @apply px-4;
+        }
+        .grid {
+            @apply grid-cols-1;
+        }
+        #language-selector {
+            @apply text-sm px-2 py-1;
+        }
+        #cookie-content {
+            padding: 1rem;
+            width: 90%;
+        }
+        #cookie-content h2 {
+            font-size: 1.25rem;
+        }
+        #cookie-content p {
+            font-size: 0.875rem;
+        }
+        #cookie-content button {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+        }
+    }
+    @media (max-width: 480px) {
+        h1 {
+            @apply text-2xl;
+        }
+        p {
+            @apply text-sm;
+        }
+        .space-x-4 > * + * {
+            @apply ml-2;
+        }
+        button, a.inline-block {
+            @apply text-sm px-4 py-2;
+        }
+        #language-selector {
+            @apply text-xs px-2 py-1;
+        }
+        #cookie-content {
+            padding: 0.75rem;
+        }
+        #cookie-content h2 {
+            font-size: 1rem;
+        }
+        #cookie-content p {
+            font-size: 0.75rem;
+        }
+        #cookie-content button {
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+        }
+    }
+</style>
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+<!-- Background Canvas -->
+<canvas id="background-canvas"></canvas>
+
+<!-- Cookie Pop-Up -->
+<div id="cookie-popup">
+    <div id="cookie-container">
+        <div id="cookie-content">
+            <canvas id="cookie-canvas"></canvas>
+            <h2>Consentement aux Cookies & Cache</h2>
+            <p>Nous utilisons des cookies et le cache pour améliorer votre expérience, analyser l'utilisation et proposer un contenu personnalisé. En continuant, vous acceptez notre utilisation des cookies et du cache comme décrit dans notre <a href="privacy-fr.html" class="text-red-600 hover:underline">Politique de Confidentialité</a>.</p>
+            <div class="space-x-4">
+                <button id="cookie-accept" class="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition">Accepter</button>
+                <button id="cookie-reject" class="bg-gray-500 text-white px-4 py-2 rounded-full hover:bg-gray-600 transition">Refuser</button>
+                <button id="cookie-manage" class="bg-gray-500 text-white px-4 py-2 rounded-full hover:bg-gray-600 transition">Gérer</button>
+            </div>
+            <div id="manage-settings">
+                <label><input type="checkbox" id="essential-cookies" checked disabled> Cookies Essentiels (Requis)</label>
+                <label><input type="checkbox" id="analytics-cookies"> Cookies Analytiques</label>
+                <label><input type="checkbox" id="advertising-cookies"> Cookies Publicitaires</label>
+                <label><input type="checkbox" id="functional-cookies"> Cookies Fonctionnels</label>
+                <label><input type="checkbox" id="cache-storage"> Stockage Cache</label>
+                <div class="mt-4 text-center">
+                    <button id="save-settings" class="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container mx-auto text-center">
+    <!-- Language Selector -->
+    <div id="language-selector">
+        <select id="language-select" class="bg-red-600 text-white rounded-full px-4 py-2 focus:outline-none">
+            <option value="en" ><i class="fas fa-globe mr-2"></i> English</option>
+            <option value="fr" selected><i class="fas fa-globe mr-2"></i> Français</option>
+        </select>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <!-- Header Section with Get Started and Welcome -->
+    <div class="header-section">
+        <!-- Get Started Button (Centered, below language selector) -->
+        <div class="mt-16">
+            <a href="signup-fr.php" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-rocket mr-2"></i> Let's go!</a>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <!-- Welcome Section (Right Below Get Started) -->
+        <section class="mt-6">
+            <h1 class="text-5xl font-bold text-red-600">Bienvenue à Thundra Music</h1>
+            <p id="main-tagline" class="text-xl mt-4">Démocratisons l'Industrie de la Musique!</p>
+            <br>
+            <br>
+            <div class="mt-4 flex justify-center space-x-4 flex-wrap">
+                <a href="#" target="_blank" class="text-red-600 hover:underline"><i class="fab fa-app-store-ios text-2xl"></i> App Store</a>
+                <a href="#" target="_blank" class="text-red-600 hover:underline"><i class="fab fa-google-play text-2xl"></i> Play Store</a>
+                <a href="#" target="_blank" class="text-red-600 hover:underline"><i class="fab fa-windows text-2xl"></i> Windows</a>
+                <a href="#" target="_blank" class="text-red-600 hover:underline"><i class="fab fa-linux text-2xl"></i> Linux</a>
+                <a href="#" target="_blank" class="text-red-600 hover:underline"><i class="fas fa-mobile-alt text-2xl"></i> HarmonyOS</a>
+            </div>
+            <a href="about-fr.html" class="mt-4 inline-block text-red-600 hover:underline"><i class="fas fa-info-circle mr-2"></i> Découvrez Notre Équipe</a>
+        </section>
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <!-- Goals Section -->
+    <section class="my-8">
+        <h2 class="text-3xl font-semibold">Notre Ambition</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 max-w-5xl mx-auto">
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <i class="fas fa-microphone-alt text-2xl text-red-600 mb-3"></i>
+                <h3 class="text-lg font-semibold">Donner vie aux Artistes</h3>
+                <p class="text-sm mt-2">Fournir des outils aux artistes indépendants pour publier, monétiser et se connecter avec les fans sans intermédiaires grâce à une technologie hybride (Web 2 + Web 3).</p>
+            </div>
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <i class="fas fa-coins text-2xl text-red-600 mb-3"></i>
+                <h3 class="text-lg font-semibold">Récompenser les Utilisateurs</h3>
+                <p class="text-sm mt-2">Offrir des récompenses en XP et jétons ICE pour écouter de la musique IA, interagir avec la plateforme, partager avec des amis en veillant à ce que chaque interaction compte et soit récompensée.</p>
+            </div>
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <i class="fas fa-users text-2xl text-red-600 mb-3"></i>
+                <h3 class="text-lg font-semibold">Construire sa Communauté</h3>
+                <p class="text-sm mt-2">Favoriser une communauté mondiale où les amateurs et créateurs de musique ainsi que les créateurs de contenus collaborent, gagnent, grandissent et s'amusent ensemble.</p>
+            </div>
+        </div>
+    </section>
+    <br>
+    <br>
+    <br>
+
+    <!-- Mission Section -->
+    <section class="my-8">
+        <h2 class="text-3xl font-semibold">Notre Mission</h2>
+        <p class="text-lg mt-4 max-w-3xl mx-auto">Chez Thundra Music, nous souhaitons donner aux artistes et aux auditeurs les moyens d'agir grâce à l'IA et la Blockchain, en créant un écosystème musical équitable, transparent et gratifiant. Nous croyons qu'il est important de faire tomber les barrières dans l'industrie musicale, en permettant à tous de découvrir la musique IA tout en gagnant en retour, d'offrir aux artistes indépendants une plateforme pour s'épanouir et aux utilisateurs la possibilité de contribuer à façonner l'avenir de la musique.</p>
+    </section>
+    <br>
+    <br>
+    <br>
+
+    <!-- Key Features Section -->
+    <section class="my-8">
+        <h2 class="text-3xl font-semibold">Aspects Majeurs</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-4 max-w-6xl mx-auto">
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <i class="fas fa-music text-2xl text-red-600 mb-3"></i>
+                <h3 class="text-lg font-semibold">Écoute & Publie</h3>
+                <p class="text-sm mt-2">Streamez des musiques ou publiez facilement tes propres morceaux.</p>
+            </div>
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <i class="fas fa-store text-2xl text-red-600 mb-3"></i>
+                <h3 class="text-lg font-semibold">Thundra Market</h3>
+                <p class="text-sm mt-2">Achétez et vendez les collections, merch des artistes utilisant le jéton ICE.</p>
+            </div>
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <i class="fas fa-coins text-2xl text-red-600 mb-3"></i>
+                <h3 class="text-lg font-semibold">Gagne des Récompenses</h3>
+                <p class="text-sm mt-2">Rafflez des XP et jétons ICE grâce à vos intéractions et convertissez les en vraie valeur.</p>
+            </div>
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <i class="fas fa-users text-2xl text-red-600 mb-3"></i>
+                <h3 class="text-lg font-semibold">Espaces Communautaires</h3>
+                <p class="text-sm mt-2">Réjoignez notre environnement social via des discussions, groupes, espaces audios et connectez-vous avec les autres.</p>
+            </div>
+        </div>
+    </section>
+    <br>
+    <br>
+    <br>
+
+    <!-- Motivation Section -->
+    <section class="my-8">
+        <h2 class="text-3xl font-semibold">Notre Motivation</h2>
+        <p class="text-lg mt-4 max-w-3xl mx-auto">L'industrie musicale traditionnelle zappe les consommateurs et laisse souvent les artistes en difficulté pour obtenir une rémunération équitable et une visibilité optimale. Nous souhaitons changer cela en tirant parti de technologies comme l'IA pour créer une plateforme sociale décentralisée où la créativité est valorisée et où chaque utilisateur a sa place dans l'écosystème.</p>
+    </section>
+    <br>
+    <br>
+    <br>
+
+    <!-- User Content Section -->
+    <section class="my-8">
+        <h2 class="text-3xl font-semibold">Ce qu'en pensent nos Utilisateurs</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 max-w-4xl mx-auto">
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <p class="text-sm italic">"Thundra Music m'a donné une plateforme pour partager ma musique avec le monde entier. J'ai gagné plus en un mois ici qu'en un an ailleurs !"</p>
+                <p class="text-sm mt-2 font-semibold">- Luisance</p>
+            </div>
+            <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                <p class="text-sm italic">"J'adore gagner des récompenses simplement en interagissant avec mes chansons, artistes et espaces de discussion et de groupe préférés. Thundra Music rend la musique à nouveau amusante !"</p>
+                <p class="text-sm mt-2 font-semibold">- Suspect 44</p>
+            </div>
+        </div>
+    </section>
+    <br>
+    <br>
+
+    <!-- For Business, Artists, and Community Buttons -->
+    <div class="mt-16 flex justify-center space-x-4 flex-wrap">
+        <a href="business-fr.html" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-briefcase mr-2"></i> Business</a>
+        <a href="artists_fr.html" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-paint-brush mr-2"></i> Artistes</a>
+        <a href="community_fr.html" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-users mr-2"></i> Communauté</a>
+    </div>
+    <br>
+    <br>
+
+    <!-- Impact Section -->
+    <section class="my-8">
+        <h2 class="text-3xl font-semibold">Notre Impact</h2>
+        <div class="mt-6">
+            <div id="user-counter" class="text-4xl text-red-600 font-mono mt-4">0</div>
+            <p class="text-lg">Utilisateurs Mondiaux</p>
+            <p class="text-sm mt-2">Artistes au total: 10,000+</p>
+            <p class="text-sm">Musiques Streamées: 1M+ Daily</p>
+        </div>
+    </section>
+    <br>
+
+    <!-- World Map Background with Live Pinpoints -->
+    <section class="my-8 relative">
+        <h2 class="text-3xl font-semibold mb-4">Rejoignez Notre Communauté Mondiale</h2>
+        <br>
+        <br>
+        <img src="world-map2.jpg" alt="World Map" class="w-full h-auto opacity-50">
+        <canvas id="user-pinpoints" class="absolute inset-0"></canvas>
+    </section>
+
+    <!-- Login/Sign-up Buttons -->
+    <div class="space-x-4 my-8 flex justify-center flex-wrap">
+        <a href="login-fr.php" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-sign-in-alt mr-2"></i> Se connecter</a>
+        <a href="signup-fr.php" class="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition electric-hover"><i class="fas fa-user-plus mr-2"></i> S'inscrire</a>
+    </div>
+</div>
+
+<!-- Footer with Social Media Links, Policy Links, and Theme Toggle -->
+<footer class="text-center text-sm py-4">
+    <!-- Social Media Links -->
+    <div class="mb-4">
+        <p class="text-lg font-semibold">Suivez-nous</p>
+        <div class="flex justify-center space-x-4 mt-2">
+            <a href="https://x.com/ThundraMusic" target="_blank" class="text-red-600 hover:text-red-700"><i class="fab fa-x-twitter text-2xl"></i></a>
+            <a href="https://instagram.com/thundra_music" target="_blank" class="text-red-600 hover:text-red-700"><i class="fab fa-instagram text-2xl"></i></a>
+            <a href="https://facebook.com/thundramusic" target="_blank" class="text-red-600 hover:text-red-700"><i class="fab fa-facebook text-2xl"></i></a>
+        </div>
+    </div>
+    <!-- Policy Links -->
+    <div>
+        <a href="privacy-fr.html" class="text-red-600 hover:underline mx-2">Politique de Confidentialité</a>
+        <a href="conduct-fr.html" class="text-red-600 hover:underline mx-2">Code de Conduite de la Communauté</a>
+        <a href="terms-fr.html" class="text-red-600 hover:underline mx-2">Conditions Générales d'Utilisation</a>
+        <a href="legal-fr.html" class="text-red-600 hover:underline mx-2">Lois et Directives</a>
+    </div>
+    <div class="mt-4">
+        <button id="theme-toggle" class="text-red-600 hover:text-red-700 focus:outline-none">
+            <i id="theme-icon" class="fas fa-moon text-2xl"></i>
+        </button>
+    </div>
+</footer>
+
+<script>
+    // Cookie Pop-Up Logic
+    const cookiePopup = document.getElementById('cookie-popup');
+    const cookieContent = document.getElementById('cookie-content');
+    const cookieCanvas = document.getElementById('cookie-canvas');
+    const cookieAccept = document.getElementById('cookie-accept');
+    const cookieReject = document.getElementById('cookie-reject');
+    const cookieManage = document.getElementById('cookie-manage');
+    const manageSettings = document.getElementById('manage-settings');
+    const saveSettings = document.getElementById('save-settings');
+
+    // Show pop-up only if no consent is stored
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!localStorage.getItem('cookieConsent')) {
+            cookiePopup.style.display = 'flex';
+            setTimeout(() => cookieContent.classList.add('active'), 50); // Smooth slide-down
+        }
+    });
+
+    // Accept cookies and cache
+    cookieAccept.addEventListener('click', () => {
+        localStorage.setItem('cookieConsent', 'accepted');
+        localStorage.setItem('analyticsCookies', 'true');
+        localStorage.setItem('advertisingCookies', 'true');
+        localStorage.setItem('functionalCookies', 'true');
+        localStorage.setItem('cacheStorage', 'true');
+        cookieContent.classList.remove('active');
+        setTimeout(() => cookiePopup.style.display = 'none', 1200); // Match transition duration
+    });
+
+    // Reject non-essential cookies and cache
+    cookieReject.addEventListener('click', () => {
+        localStorage.setItem('cookieConsent', 'rejected');
+        localStorage.setItem('analyticsCookies', 'false');
+        localStorage.setItem('advertisingCookies', 'false');
+        localStorage.setItem('functionalCookies', 'false');
+        localStorage.setItem('cacheStorage', 'false');
+        cookieContent.classList.remove('active');
+        setTimeout(() => cookiePopup.style.display = 'none', 1200); // Match transition duration
+    });
+
+    // Show manage settings
+    cookieManage.addEventListener('click', () => {
+        manageSettings.style.display = 'block';
+        cookieAccept.style.display = 'none';
+        cookieReject.style.display = 'none';
+        cookieManage.style.display = 'none';
+    });
+
+    // Save custom settings
+    saveSettings.addEventListener('click', () => {
+        const analyticsCookies = document.getElementById('analytics-cookies').checked;
+        const advertisingCookies = document.getElementById('advertising-cookies').checked;
+        const functionalCookies = document.getElementById('functional-cookies').checked;
+        const cacheStorage = document.getElementById('cache-storage').checked;
+        localStorage.setItem('cookieConsent', 'custom');
+        localStorage.setItem('analyticsCookies', analyticsCookies.toString());
+        localStorage.setItem('advertisingCookies', advertisingCookies.toString());
+        localStorage.setItem('functionalCookies', functionalCookies.toString());
+        localStorage.setItem('cacheStorage', cacheStorage.toString());
+        cookieContent.classList.remove('active');
+        setTimeout(() => cookiePopup.style.display = 'none', 1200); // Match transition duration
+    });
+
+    // Cookie Pop-Up Live Background
+    const ctxCookie = cookieCanvas.getContext('2d');
+    cookieCanvas.width = 500; // Match content width
+    cookieCanvas.height = 400; // Adjust height for pop-up
+    let cookieParticles = [];
+
+    class CookieParticle {
+        constructor() {
+            this.x = Math.random() * cookieCanvas.width;
+            this.y = Math.random() * cookieCanvas.height;
+            this.size = Math.random() * 15 + 5;
+            this.speedX = (Math.random() * 1 - 0.5) * 0.3;
+            this.speedY = (Math.random() * 1 - 0.5) * 0.3;
+            this.text = '♪';
+        }
+
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x < 0 || this.x > cookieCanvas.width) this.speedX *= -1;
+            if (this.y < 0 || this.y > cookieCanvas.height) this.speedY *= -1;
+        }
+
+        draw() {
+            ctxCookie.font = `${this.size}px Arial`;
+            ctxCookie.fillStyle = 'rgba(255, 0, 0, 0.5)';
+            ctxCookie.fillText(this.text, this.x, this.y);
+        }
+    }
+
+    function initCookieParticles() {
+        for (let i = 0; i < 20; i++) {
+            cookieParticles.push(new CookieParticle());
+        }
+    }
+
+    function animateCookieParticles() {
+        ctxCookie.clearRect(0, 0, cookieCanvas.width, cookieCanvas.height);
+        cookieParticles.forEach(particle => {
+            particle.update();
+            particle.draw();
+        });
+        requestAnimationFrame(animateCookieParticles);
+    }
+
+    initCookieParticles();
+    animateCookieParticles();
+
+    // Auto-detect light/dark mode
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+        document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+    }
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        if (document.body.classList.contains('dark')) {
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+
+    // Load saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        } else {
+            document.body.classList.remove('dark');
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+        }
+    }
+
+    // Language Selector with Page Redirection
+    const selector = document.getElementById('language-select');
+    selector.addEventListener('change', (e) => {
+        const lang = e.target.value;
+        const languagePages = {
+            en: 'index.html',   // English page in root directory
+            fr: 'welcome.html'       // French page (current page subdirectory)
+        };
+        const targetPage = languagePages[lang] || 'index.html'; // Default to English if language not found
+        window.location.href = targetPage; // Redirect to the selected language page
+    });
+
+    // Translate tagline
+    selector.addEventListener('change', (e) => {
+        const lang = e.target.value;
+        const translations = {
+            en: "Let's Democratize the Music Industry!",
+            fr: "Démocratisons l'Industrie de la Musique!",
+        };
+        document.getElementById('main-tagline').textContent = translations[lang] || translations.fr;
+    });
+
+    // Real-time User Counter (placeholder)
+    let userCount = 0;
+    const counter = document.getElementById('user-counter');
+    setInterval(() => {
+        userCount += Math.floor(Math.random() * 10);
+        counter.textContent = userCount.toLocaleString();
+    }, 5000);
+
+    // Canvas for User Pinpoints
+    const userCanvas = document.getElementById('user-pinpoints');
+    const userCtx = userCanvas.getContext('2d');
+    userCanvas.width = window.innerWidth;
+    userCanvas.height = 400;
+    const pinpoints = [];
+    const maxPinpoints = 10;
+
+    class Pinpoint {
+        constructor() {
+            this.x = Math.random() * userCanvas.width;
+            this.y = Math.random() * userCanvas.height;
+            this.opacity = 1;
+            this.fadeSpeed = 0.02;
+        }
+        draw() {
+            userCtx.beginPath();
+            userCtx.arc(this.x, this.y, 5, 0, Math.PI * 2);
+            userCtx.fillStyle = `rgba(255, 0, 0, ${this.opacity})`;
+            userCtx.fill();
+        }
+        update() {
+            this.opacity -= this.fadeSpeed;
+        }
+    }
+
+    function animatePinpoints() {
+        userCtx.clearRect(0, 0, userCanvas.width, userCanvas.height);
+        pinpoints.forEach((pinpoint, index) => {
+            pinpoint.update();
+            pinpoint.draw();
+            if (pinpoint.opacity <= 0) {
+                pinpoints.splice(index, 1);
+            }
+        });
+        requestAnimationFrame(animatePinpoints);
+    }
+
+    setInterval(() => {
+        if (pinpoints.length < maxPinpoints) {
+            pinpoints.push(new Pinpoint());
+        }
+    }, 2000);
+
+    animatePinpoints();
+
+    // Live Background for Entire Page
+    const canvas = document.getElementById('background-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+    const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 20 + 10;
+            this.speedX = (Math.random() * 2 - 1) * 0.5;
+            this.speedY = (Math.random() * 2 - 1) * 0.5;
+            this.directionY = Math.random() > 0.5 ? 1 : -1;
+            this.text = '♪';
+        }
+
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY * this.directionY;
+
+            if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        }
+
+        draw() {
+            ctx.font = `${this.size}px Arial`;
+            ctx.fillStyle = '#ff0000';
+            ctx.fillText(this.text, this.x, this.y);
+        }
+    }
+
+    function initParticles() {
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(particle => {
+            particle.update();
+            particle.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    initParticles();
+    animate();
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        userCanvas.width = window.innerWidth;
+        userCanvas.height = 400;
+        cookieCanvas.width = 500; // Adjust canvas width on resize
+        cookieCanvas.height = 400; // Adjust canvas height on resize
+        particles.forEach(particle => {
+            particle.x = Math.random() * canvas.width;
+            particle.y = Math.random() * canvas.height;
+        });
+        cookieParticles.forEach(particle => {
+            particle.x = Math.random() * cookieCanvas.width;
+            particle.y = Math.random() * cookieCanvas.height;
+        });
+    });
+</script>
+</body>
+</html>

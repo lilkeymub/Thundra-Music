@@ -1,0 +1,77 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - FAQ</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="faq.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white min-h-screen page-transition">
+    <!-- Sidebar -->
+    <div class="flex">
+        <!-- Main Content -->
+        <main class="ml-64 p-8 w-full">
+            <h1 class="text-3xl font-bold text-red-600">Frequently Asked Questions</h1>
+            <div class="mt-6">
+                <h2 class="text-2xl font-semibold">General Questions</h2>
+                <div class="mt-4">
+                    <h3 class="text-xl font-semibold">What is Thundra Music?</h3>
+                    <p class="text-sm mt-2">Thundra Music is a platform to democratize the music industry by empowering artists and rewarding users.</p>
+                </div>
+                <div class="mt-4">
+                    <h3 class="text-xl font-semibold">How do I earn XP and ICE?</h3>
+                    <p class="text-sm mt-2">You can earn XP and ICE by engaging with the platform, such as joining groups or listening to music.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer with Policy Links -->
+    <footer class="absolute bottom-4 left-64 right-0 text-center text-sm">
+        <a href="privacy.html" class="text-red-600 hover:underline mx-2">Privacy Policy</a>
+        <a href="conduct.html" class="text-red-600 hover:underline mx-2">Community Code of Conduct</a>
+    </footer>
+</body>
+</html>

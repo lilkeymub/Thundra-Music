@@ -1,0 +1,321 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+    if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+            var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+
+            // Convert sheet to JSON to filter blank rows
+            var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+            // Filter out blank rows (rows where all cells are empty, null, or undefined)
+            var filteredData = jsonData.filter(row => row.some(filledCell));
+
+            // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+            var headerRowIndex = filteredData.findIndex((row, index) =>
+              row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+            );
+            // Fallback
+            if (headerRowIndex === -1 || headerRowIndex > 25) {
+              headerRowIndex = 0;
+            }
+
+            // Convert filtered JSON back to CSV
+            var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+            csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+            return csv;
+        } catch (e) {
+            console.error(e);
+            return "";
+        }
+    }
+    return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - Politique de Confidentialité</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="policy.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: left;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                max-width: 90%;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            h3 {
+                font-size: 1.2rem;
+            }
+            p, ul {
+                font-size: 0.875rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+                max-width: 95%;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.2rem;
+            }
+            h3 {
+                font-size: 1rem;
+            }
+            p, ul {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <!-- Live Background Canvas -->
+    <canvas id="background-canvas"></canvas>
+
+    <!-- Centered Text Content -->
+    <div class="container">
+        <h1 class="text-3xl font-bold text-red-600">Politique de Confidentialité</h1>
+        <div class="mt-6">
+            <h2 class="text-2xl font-semibold">Notre Engagement Immuable envers Votre Confidentialité</h2>
+            <p class="text-sm mt-2">Chez Thundra Music, nous accordons la plus haute priorité à la protection de votre confidentialité avec un niveau de sérieux et de considération inégalé. Nous comprenons que la confiance est la pierre angulaire de tout écosystème numérique, en particulier sur une plateforme aussi dynamique et multifacette que la nôtre. Cette politique de confidentialité détaille nos pratiques rigoureuses de collecte, d'utilisation et de protection de vos données, garantissant transparence et sécurité à travers chaque interaction – que vous participiez à des discussions, rejoigniez des groupes, diffusiez de la musique, gagniez des récompenses, participiez au Thundra Market, utilisiez Thundra Ads ou exploriez Thundra Learning. Notre engagement est renforcé par une technologie Blockchain de pointe, que nous utilisons pour sécuriser vos données et préserver votre vie privée à long terme, quel que soit le niveau ou la fonctionnalité que vous utilisez.</p>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">1. Collecte de Données : Ce que Nous Rassemblons et Pourquoi</h3>
+                <p class="text-sm mt-2">Nous collectons des informations pour vous offrir une expérience fluide et personnalisée sur Thundra Music. Cela inclut :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Informations de Compte :</strong> Les données que vous fournissez lors de l'inscription, telles que votre nom, adresse e-mail, numéro de téléphone et autres identifiants, pour créer et gérer votre compte.</li>
+                    <li><strong>Données d'Utilisation :</strong> Informations sur vos interactions sur notre plateforme, y compris l'historique d'écoute, les achats sur le Thundra Market, la participation à des discussions et groupes, les récompenses gagnées, l'engagement avec Thundra Ads et l'activité dans les modules Thundra Learning.</li>
+                    <li><strong>Données Techniques :</strong> Informations sur l'appareil, les adresses IP, les types de navigateurs et autres métadonnées pour optimiser les performances de la plateforme et garantir la sécurité.</li>
+                </ul>
+                <p class="text-sm mt-2">Nous ne collectons que ce qui est nécessaire pour fournir nos services efficacement, en minimisant l'intrusion tout en maximisant la valeur pour vous.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">2. Utilisation des Données : Amélioration de Votre Expérience</h3>
+                <p class="text-sm mt-2">Vos données nous permettent de créer une expérience personnalisée et enrichissante sur Thundra Music. Nous les utilisons pour :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Personnalisation du Contenu :</strong> Recommander de la musique, des événements et des articles du marché en fonction de vos habitudes d'écoute et de vos préférences.</li>
+                    <li><strong>Facilitation des Transactions :</strong> Traiter les achats, les transactions en jetons $ICE et les distributions de récompenses de manière sécurisée.</li>
+                    <li><strong>Activation des Interactions :</strong> Soutenir des fonctionnalités comme les discussions, les espaces de groupe et l'engagement communautaire en assurant une communication fluide.</li>
+                    <li><strong>Amélioration des Services :</strong> Analyser les modèles d'utilisation pour améliorer la fonctionnalité de la plateforme, de la diffusion de musique au ciblage de Thundra Ads et à la livraison de contenu Thundra Learning.</li>
+                </ul>
+                <p class="text-sm mt-2">Chaque utilisation de vos données est conçue pour enrichir votre expérience tout en respectant des normes de confidentialité strictes.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">3. Partage des Données : Limites Strictes</h3>
+                <p class="text-sm mt-2">Nous sommes fermement engagés à ne pas partager vos données personnelles avec des tiers, sauf dans les cas suivants limités :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Exigences Légales :</strong> Lorsqu'exigés par la loi ou pour se conformer à des processus juridiques, comme les ordonnances judiciaires.</li>
+                    <li><strong>Traitement des Paiements :</strong> Avec des processeurs de paiement de confiance pour faciliter les transactions, en veillant à ce qu'ils respectent des normes de confidentialité strictes.</li>
+                    <li><strong>Opérations Blockchain :</strong> Les données anonymisées peuvent être enregistrées sur la Blockchain pour garantir transparence et sécurité (par ex., transactions en jetons $ICE), mais cela se fait de manière à protéger votre identité.</li>
+                </ul>
+                <p class="text-sm mt-2">Au-delà de ces exceptions, vos données restent strictement confidentielles et ne sont jamais vendues ni partagées à des fins de marketing.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">4. Sécurité : Protection Alimentée par la Blockchain</h3>
+                <p class="text-sm mt-2">Chez Thundra Music, la sécurité n'est pas seulement une priorité, c'est un principe fondamental. Nous exploitons une technologie Blockchain de pointe pour offrir une couche supplémentaire de protection à vos données sur toutes les fonctionnalités de la plateforme :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Enregistrements Immuables :</strong> La Blockchain garantit que toutes les transactions – qu'elles soient sur le Thundra Market, dans les systèmes de récompenses ou la revente de billets – sont enregistrées de manière immuable, empêchant toute altération et assurant la transparence.</li>
+                    <li><strong>Sécurité Décentralisée :</strong> En décentralisant le stockage des données, nous réduisons le risque de violations centralisées, rendant beaucoup plus difficile l'accès par des acteurs malveillants à vos informations.</li>
+                    <li><strong>Interactions Chiffrées :</strong> Chaque action que vous entreprenez – que ce soit discuter, rejoindre des groupes, diffuser de la musique, interagir avec Thundra Ads ou accéder à Thundra Learning – est chiffrée de bout en bout, garantissant que vos données restent privées et sécurisées.</li>
+                    <li><strong>Assurance à Long Terme :</strong> La permanence de la Blockchain garantit que l'intégrité de vos données est maintenue dans le temps, vous protégeant à travers tous les niveaux de service, du gratuit au premium, et sur toutes les fonctionnalités, maintenant et à l'avenir.</li>
+                </ul>
+                <p class="text-sm mt-2">En plus de la Blockchain, nous utilisons des protocoles de chiffrement standards de l'industrie, des serveurs sécurisés et des audits de sécurité réguliers pour protéger vos données contre tout accès non autorisé, vous offrant une tranquillité d'esprit lorsque vous utilisez notre plateforme.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">5. Cache et Cookies : Amélioration des Performances et de la Personnalisation</h3>
+                <p class="text-sm mt-2">Le cache et les cookies sont essentiels pour offrir une expérience fluide et personnalisée sur Thundra Music, notamment pour des fonctionnalités comme Thundra Ads. Voici pourquoi ils comptent :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Optimisation des Performances :</strong> Le cache stocke localement les données fréquemment consultées (par ex., les listes de lecture musicales, les annonces du Thundra Market), réduisant les temps de chargement et garantissant une expérience fluide même avec des connexions internet lentes.</li>
+                    <li><strong>Livraison de Contenu Personnalisé :</strong> Les cookies nous permettent de mémoriser vos préférences, comme les paramètres de langue, les choix de mode sombre/clair et les éléments récemment vus, adaptant votre expérience à travers les discussions, les groupes, la diffusion de musique et Thundra Learning.</li>
+                    <li><strong>Efficacité de Thundra Ads :</strong> Les cookies jouent un rôle crucial dans Thundra Ads en suivant des données d'engagement anonymisées, nous permettant de proposer des publicités pertinentes (par ex., événements d'artistes à venir ou promotions sur le marché) sans compromettre vos informations personnelles. Cela garantit que les publicités sont significatives pour vous tout en soutenant la croissance de notre écosystème.</li>
+                    <li><strong>Avantages pour les Utilisateurs :</strong> Temps de chargement plus rapides, moins d'interruptions et une expérience plus cohérente sur différents appareils – le cache et les cookies vous permettent de passer facilement de la diffusion de musique à la navigation sur le Thundra Market ou à l'engagement dans les espaces communautaires.</li>
+                    <li><strong>Avantages pour la Plateforme :</strong> En réduisant la charge des serveurs grâce au cache et en optimisant la diffusion de publicités avec des cookies, nous pouvons maintenir une infrastructure rentable, nous permettant d'investir davantage dans les récompenses pour les artistes, les fonctionnalités de la plateforme et les avantages pour les utilisateurs comme les incitations en jetons $ICE.</li>
+                </ul>
+                <p class="text-sm mt-2">Vous pouvez gérer vos préférences de cookies via les paramètres de votre navigateur, mais les activer garantit la meilleure expérience possible sur Thundra Music. Nous utilisons les cookies de manière responsable, en priorisant votre confidentialité en anonymisant les données et en respectant des normes de protection des données strictes.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">6. Vos Droits : Contrôle sur Vos Données</h3>
+                <p class="text-sm mt-2">Nous vous donnons un contrôle total sur vos données. Vous disposez des droits suivants :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Accès :</strong> Consultez toutes les données associées à votre compte, y compris l'historique des transactions, les journaux de discussion et les préférences musicales.</li>
+                    <li><strong>Mise à Jour :</strong> Modifiez vos informations personnelles, préférences et paramètres à tout moment.</li>
+                    <li><strong>Suppression :</strong> Demandez la suppression de votre compte et des données associées, sous réserve des exigences de conservation légales.</li>
+                    <li><strong>Opt-Out :</strong> Refusez la collecte de données non essentielles, comme la personnalisation de Thundra Ads, via les paramètres de votre compte.</li>
+                </ul>
+                <p class="text-sm mt-2">Exercez ces droits directement via le tableau de bord de votre compte ou en nous contactant à l'adresse e-mail ci-dessous.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">7. Mises à Jour de Cette Politique</h3>
+                <p class="text-sm mt-2">Nous pouvons mettre à jour cette politique de confidentialité périodiquement pour refléter les changements dans nos pratiques ou les exigences légales. Toute mise à jour sera publiée ici, et les changements importants seront communiqués par e-mail ou notifications sur la plateforme.</p>
+            </div>
+
+            <div class="mt-4">
+                <p class="text-sm">Dernière Mise à Jour : 04 mai 2025</p>
+                <p class="text-sm">Pour toute préoccupation concernant la confidentialité, veuillez nous contacter à <a href="mailto:contact.thundramusic@gmail.com" class="text-red-600 hover:underline">contact.thundramusic@gmail.com</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect light/dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+        }
+
+        // Theme Toggle (if needed, can be expanded with a button)
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            }
+        }
+
+        // Live Background Animation
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 10;
+                this.speedX = (Math.random() * 2 - 1) * 0.5;
+                this.speedY = (Math.random() * 2 - 1) * 0.5;
+                this.directionY = Math.random() > 0.5 ? 1 : -1;
+                this.text = '♪';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY * this.directionY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillStyle = '#ff0000';
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles.forEach(particle => {
+                particle.x = Math.random() * canvas.width;
+                particle.y = Math.random() * canvas.height;
+            });
+        });
+    </script>
+</body>
+</html>

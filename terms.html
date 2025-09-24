@@ -1,0 +1,355 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+    if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+            var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+
+            // Convert sheet to JSON to filter blank rows
+            var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+            // Filter out blank rows (rows where all cells are empty, null, or undefined)
+            var filteredData = jsonData.filter(row => row.some(filledCell));
+
+            // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+            var headerRowIndex = filteredData.findIndex((row, index) =>
+              row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+            );
+            // Fallback
+            if (headerRowIndex === -1 || headerRowIndex > 25) {
+              headerRowIndex = 0;
+            }
+
+            // Convert filtered JSON back to CSV
+            var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+            csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+            return csv;
+        } catch (e) {
+            console.error(e);
+            return "";
+        }
+    }
+    return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - General User Terms & Conditions</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="policy.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: left;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                max-width: 90%;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            h3 {
+                font-size: 1.2rem;
+            }
+            p, ul {
+                font-size: 0.875rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+                max-width: 95%;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.2rem;
+            }
+            h3 {
+                font-size: 1rem;
+            }
+            p, ul {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <!-- Live Background Canvas -->
+    <canvas id="background-canvas"></canvas>
+
+    <!-- Centered Text Content -->
+    <div class="container">
+        <h1 class="text-3xl font-bold text-red-600">General User Terms & Conditions</h1>
+        <div class="mt-6">
+            <h2 class="text-2xl font-semibold">Welcome to Thundra Music – The MusicFi Revolution</h2>
+            <p class="text-sm mt-2">These General User Terms & Conditions ("Terms") constitute a legally binding contract between you ("User", "you", or "your") and Thundra Music, a decentralized social music network application pioneering the MusicFi (Decentralized Music Finance) revolution. By accessing or using the Thundra Music app, website, or any associated services (collectively, the "Platform"), you agree to be bound by these Terms, as well as all applicable laws, regulations, and guidelines set forth by Thundra Music, governments, regulatory authorities, ICE Blockchain, other blockchains, organizations, enterprises, and third-party service providers. If you do not agree with these Terms, you must not use the Platform.</p>
+            <p class="text-sm mt-2">Thundra Music is a MusicFi platform that combines the power of Blockchain and AI to create a decentralized ecosystem where users can engage with music, connect socially, and participate in a transparent financial reward system. We aim to revolutionize the music industry by empowering users to create, share, and monetize their passions while fostering a vibrant community. These Terms outline the features, roles, rules, and responsibilities within our ecosystem, ensuring a safe, fair, and rewarding experience for all.</p>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">1. Introduction to Thundra Music and the MusicFi Ecosystem</h3>
+                <p class="text-sm mt-2">Thundra Music introduces the concept of MusicFi, a decentralized music finance model inspired by frameworks like GameFi, SocialFi, and DeFi. MusicFi leverages Blockchain technology to create a transparent, user-driven ecosystem where music creation, social interaction, and financial rewards converge. Our Platform integrates with the ICE Blockchain and other blockchains to provide a seamless, decentralized experience, while AI enhances music creation, curation, and user engagement.</p>
+                <p class="text-sm mt-2"><strong>Core Features and Options:</strong></p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Music Creation and Streaming:</strong> Users can create AI-generated music, upload original tracks, or stream music from other artists. AI tools assist in composing, mixing, and mastering tracks, making music creation accessible to all skill levels. Streaming is incentivized with $ICE tokens and XP based on engagement.</li>
+                    <li><strong>Social Interaction:</strong> Engage with the community through chats, groups, and audio spaces. Users can join discussions, collaborate on projects, or host live audio events to share music and ideas. Features like staked DMs (where $ICE tokens are staked to initiate conversations and returned after 90 days if no reply) ensure responsible communication.</li>
+                    <li><strong>Thundra Market:</strong> A decentralized marketplace where users can buy, sell, or trade music-related digital assets (e.g., NFTs, exclusive tracks, virtual concert tickets) using $ICE tokens. Artists can monetize their work directly, setting their own prices and terms.</li>
+                    <li><strong>Reward System:</strong> Powered by smart contracts on the ICE Blockchain, users earn $ICE tokens and XP in real-time for activities like streaming, creating music, participating in audio spaces, or completing community challenges. Rewards are distributed daily, ensuring non-stop incentivization.</li>
+                    <li><strong>Customizable Profiles:</strong> Users can create profiles showcasing their music, achievements, and community contributions. Profile tiers (e.g., free, premium) unlock additional features like advanced AI tools, higher reward rates, or exclusive market access.</li>
+                    <li><strong>Governance Participation:</strong> Users can vote on platform updates, moderator elections, and community guidelines through a Blockchain-based governance system, ensuring a democratic and transparent ecosystem.</li>
+                </ul>
+                <p class="text-sm mt-2"><strong>Roles within the Ecosystem:</strong></p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Artists:</strong> Create, upload, and monetize music through streaming, NFT sales, or virtual concerts. Artists earn $ICE tokens based on engagement and can set royalties for their work.</li>
+                    <li><strong>Listeners:</strong> Stream music, participate in social features, and earn rewards for engagement. Listeners can support artists by purchasing tracks or NFTs in the Thundra Market.</li>
+                    <li><strong>Moderators:</strong> Decentralized moderators, selected based on devotion, engagement, loyalty, personality, and community love, oversee the Platform to ensure compliance with the Community Code of Conduct. They review reports, investigate issues, and enforce rules, with actions logged on the Blockchain for transparency.</li>
+                    <li><strong>Developers:</strong> Third-party developers can build apps or integrations using Thundra Music’s API (subject to approval), enhancing the ecosystem with new features or services.</li>
+                </ul>
+                <p class="text-sm mt-2">By participating in the Thundra Music ecosystem, you agree to abide by these roles and contribute positively to the MusicFi community.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">2. Business Model and Financial Transparency</h3>
+                <p class="text-sm mt-2">Thundra Music operates on a decentralized business model that prioritizes user empowerment and financial transparency. Our revenue streams and reward mechanisms are designed to benefit the community while ensuring sustainability:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Transaction Fees:</strong> A small percentage of transactions in the Thundra Market (e.g., NFT sales, track purchases) is collected as a fee, which is reinvested into the ecosystem to fund development, rewards, and community initiatives.</li>
+                    <li><strong>Premium Subscriptions:</strong> Users can upgrade to premium tiers for enhanced features (e.g., advanced AI music tools, higher reward rates). Subscription fees are used to support platform operations and artist payouts.</li>
+                    <li><strong>Smart Contract Rewards:</strong> We deploy smart contracts on the ICE Blockchain to automate and transparently distribute $ICE tokens and XP. Rewards are calculated in real-time based on user activity (e.g., streaming minutes, social engagement, market transactions) and distributed daily. The smart contract code is publicly auditable on the Blockchain, ensuring fairness and trust.</li>
+                    <li><strong>Partnerships:</strong> Collaborations with third-party service providers (e.g., music streaming APIs, payment gateways) and blockchains (e.g., ICE Blockchain, Ethereum) enhance functionality and user experience, with revenue-sharing agreements that benefit the ecosystem.</li>
+                </ul>
+                <p class="text-sm mt-2">We are committed to financial transparency. All transactions, fees, and reward distributions are recorded on the Blockchain and accessible to users via a public ledger. This ensures that you can verify the fairness of our reward system and the allocation of funds within the ecosystem.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">3. Collaboration with ICE Blockchain and Third-Party Partners</h3>
+                <p class="text-sm mt-2">Thundra Music collaborates with the ICE Blockchain and various third-party service providers to deliver an unparalleled user interface (UI) and experience (UX). The ICE Blockchain provides the foundational infrastructure for our reward system, marketplace transactions, and governance processes. Its high-speed, low-cost transactions ensure that users can earn, trade, and stake $ICE tokens efficiently. Smart contracts on ICE Blockchain automate reward distribution, enforce marketplace rules, and record all actions transparently.</p>
+                <p class="text-sm mt-2">We also partner with third-party providers to enhance the Platform’s functionality:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>UI/UX Partners:</strong> We work with leading design firms to create an intuitive, visually stunning interface that makes music creation, social interaction, and marketplace navigation seamless. Features like drag-and-drop music composition, real-time chat animations, and a dynamic marketplace dashboard are the result of these collaborations.</li>
+                    <li><strong>AI Technology Providers:</strong> Partnerships with AI firms enable advanced music generation, personalized recommendations, and automated content moderation. For example, AI analyzes user listening habits to curate playlists and assists moderators in detecting violations like hate speech or spam.</li>
+                    <li><strong>Payment Gateways:</strong> Third-party payment providers facilitate fiat-to-crypto conversions, allowing users to purchase $ICE tokens or premium subscriptions using traditional currencies (e.g., USD, EUR).</li>
+                    <li><strong>Other Blockchains:</strong> In addition to ICE Blockchain, we integrate with other blockchains (e.g., Ethereum, Polygon) to support cross-chain NFT trading and interoperability, broadening the scope of the Thundra Market.</li>
+                </ul>
+                <p class="text-sm mt-2">By engaging with these partners, you agree to comply with their terms of service and acknowledge that Thundra Music is not liable for any issues arising from their services (e.g., downtime, data breaches). We strive to select reputable partners to ensure a secure and reliable experience, but users are responsible for reviewing third-party terms and understanding their implications.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">4. User Responsibilities and Rules</h3>
+                <p class="text-sm mt-2">As a user of Thundra Music, you agree to abide by the following rules and responsibilities to maintain a safe and fair ecosystem:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Compliance with Laws:</strong> You must comply with all applicable laws, regulations, and guidelines, including those set by governments, regulatory authorities (e.g., financial regulators, data protection agencies), ICE Blockchain, other blockchains, and third-party providers. This includes tax obligations related to $ICE token earnings, anti-money laundering (AML) regulations, and copyright laws for music uploads.</li>
+                    <li><strong>Community Code of Conduct:</strong> Adhere to the Community Code of Conduct (available at <a href="conduct.html" class="text-red-600 hover:underline">conduct.html</a>), which prohibits harassment, bullying, spamming, illegal content, and malicious activities. Violations may result in warnings, temporary bans, or permanent suspension.</li>
+                    <li><strong>Account Security:</strong> You are responsible for securing your account, including your wallet private keys and login credentials. Thundra Music is not liable for losses due to unauthorized access resulting from your failure to secure your account.</li>
+                    <li><strong>Content Ownership:</strong> By uploading music or other content, you warrant that you own the rights to it or have obtained necessary licenses. You grant Thundra Music a non-exclusive, royalty-free license to host, display, and distribute your content on the Platform.</li>
+                    <li><strong>Responsible Trading:</strong> When trading in the Thundra Market, you must ensure that your actions comply with marketplace rules (e.g., no fraudulent listings, no price manipulation). Thundra Music reserves the right to suspend accounts engaging in unfair practices.</li>
+                    <li><strong>Participation in Governance:</strong> If you participate in governance (e.g., voting for moderators or proposing changes), you agree to act in the best interest of the community and avoid manipulative practices (e.g., vote buying).</li>
+                </ul>
+                <p class="text-sm mt-2">Failure to comply with these rules may result in enforcement actions, including account suspension, forfeiture of $ICE tokens, or legal action if necessary. Thundra Music reserves the right to update these rules to address emerging challenges and ensure the ecosystem’s integrity.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">5. User Protection, Privacy, and Risk Management</h3>
+                <p class="text-sm mt-2">Thundra Music is committed to protecting users’ rights, privacy, and funds while educating them about the risks inherent in a Blockchain-based ecosystem:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Privacy Protection:</strong> We adhere to strict privacy standards as outlined in our Privacy Policy (available at <a href="privacy.html" class="text-red-600 hover:underline">privacy.html</a>). User data is encrypted, and personal information is anonymized on the Blockchain to prevent unauthorized access. We only share data with third parties (e.g., ICE Blockchain, payment gateways) when necessary for Platform functionality, and such sharing complies with data protection laws (e.g., GDPR, CCPA).</li>
+                    <li><strong>Fund Security:</strong> $ICE tokens and other assets are stored in decentralized wallets managed by users. We implement security measures like multi-signature authentication for marketplace transactions and regular smart contract audits to prevent hacks or exploits. However, users are responsible for securing their private keys, as Thundra Music cannot recover lost or stolen funds.</li>
+                    <li><strong>Crypto Volatility Awareness:</strong> You acknowledge that $ICE tokens and other cryptocurrencies are subject to volatility. Their value may fluctuate significantly due to market conditions, regulatory changes, or ecosystem developments. Thundra Music is not liable for losses due to price volatility.</li>
+                    <li><strong>Risk Mitigation Strategies:</strong> To reduce the risk of asset loss due to volatility, we suggest the following:
+                        <ul class="list-disc list-inside ml-4 text-sm mt-1">
+                            <li><strong>Diversify Holdings:</strong> Avoid holding all assets in $ICE tokens; consider diversifying into stablecoins (e.g., USDT) or other cryptocurrencies.</li>
+                            <li><strong>Stake Wisely:</strong> When staking $ICE tokens (e.g., for staked DMs or governance), assess the lock-up period and potential price fluctuations during that time.</li>
+                            <li><strong>Monitor Market Trends:</strong> Use third-party tools to track $ICE token prices and market sentiment, enabling informed decisions about earning, trading, or spending.</li>
+                            <li><strong>Secure Wallets:</strong> Use hardware wallets or secure software wallets with two-factor authentication to protect your assets from theft.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Insurance Mechanisms:</strong> We are exploring partnerships with decentralized insurance providers to offer optional coverage for $ICE token holdings, protecting users against smart contract failures or market crashes. Details will be announced as these features are rolled out.</li>
+                </ul>
+                <p class="text-sm mt-2">By using the Platform, you accept the risks associated with cryptocurrency and Blockchain technology. Thundra Music will provide educational resources (e.g., guides, tutorials) to help you navigate these risks, but you are ultimately responsible for your financial decisions.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">6. Intellectual Property and Licensing</h3>
+                <p class="text-sm mt-2">Thundra Music owns the intellectual property rights to the Platform, including its design, code, AI algorithms, and branding. Users retain ownership of the content they create (e.g., music, NFTs), but by uploading content, you grant Thundra Music a non-exclusive, worldwide, royalty-free license to use, host, and distribute it on the Platform for the purpose of providing our services.</p>
+                <p class="text-sm mt-2">You are prohibited from copying, modifying, or distributing Thundra Music’s intellectual property without prior written consent. Unauthorized use may result in legal action and account termination.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">7. Limitation of Liability and Dispute Resolution</h3>
+                <p class="text-sm mt-2">Thundra Music provides the Platform "as is" and does not guarantee uninterrupted access, error-free operation, or the accuracy of third-party services. We are not liable for:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li>Losses due to crypto volatility, hacks, or user errors (e.g., losing private keys).</li>
+                    <li>Damages caused by third-party services (e.g., ICE Blockchain downtime, payment gateway failures).</li>
+                    <li>Indirect, incidental, or consequential damages arising from Platform use.</li>
+                </ul>
+                <p class="text-sm mt-2">Disputes arising from these Terms will be resolved through binding arbitration in accordance with the rules of the American Arbitration Association (AAA). Arbitration will take place in a mutually agreed-upon location, and the arbitrator’s decision will be final. You waive your right to participate in class action lawsuits against Thundra Music.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">8. Termination and Suspension</h3>
+                <p class="text-sm mt-2">Thundra Music reserves the right to suspend or terminate your account if you violate these Terms, the Community Code of Conduct, or applicable laws. Upon termination, you will lose access to your account, rewards, and any $ICE tokens held in escrow (e.g., for staked DMs). You may terminate your account at any time by contacting support at <a href="mailto:contact.thundramusic@gmail.com" class="text-red-600 hover:underline">contact.thundramusic@gmail.com</a>, but any $ICE tokens or assets in your wallet must be withdrawn prior to termination, as Thundra Music will not be responsible for transferring them afterward.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">9. Amendments to Terms</h3>
+                <p class="text-sm mt-2">Thundra Music may update these Terms at any time to reflect changes in the ecosystem, legal requirements, or user feedback. Updates will be posted on this page, and significant changes will be communicated via email or in-app notifications. Your continued use of the Platform after updates constitutes acceptance of the revised Terms.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">10. Contact Information</h3>
+                <p class="text-sm mt-2">For questions, concerns, or support regarding these Terms, please contact us at <a href="mailto:contact.thundramusic@gmail.com" class="text-red-600 hover:underline">contact.thundramusic@gmail.com</a>.</p>
+                <p class="text-sm mt-2">Last Updated: May 04, 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect light/dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+        }
+
+        // Theme Toggle (if needed, can be expanded with a button)
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            }
+        }
+
+        // Live Background Animation
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 10;
+                this.speedX = (Math.random() * 2 - 1) * 0.5;
+                this.speedY = (Math.random() * 2 - 1) * 0.5;
+                this.directionY = Math.random() > 0.5 ? 1 : -1;
+                this.text = '♪';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY * this.directionY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillStyle = '#ff0000';
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles.forEach(particle => {
+                particle.x = Math.random() * canvas.width;
+                particle.y = Math.random() * canvas.height;
+            });
+        });
+    </script>
+</body>
+</html>

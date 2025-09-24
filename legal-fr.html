@@ -1,0 +1,320 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+    if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+            var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+
+            // Convert sheet to JSON to filter blank rows
+            var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+            // Filter out blank rows (rows where all cells are empty, null, or undefined)
+            var filteredData = jsonData.filter(row => row.some(filledCell));
+
+            // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+            var headerRowIndex = filteredData.findIndex((row, index) =>
+              row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+            );
+            // Fallback
+            if (headerRowIndex === -1 || headerRowIndex > 25) {
+              headerRowIndex = 0;
+            }
+
+            // Convert filtered JSON back to CSV
+            var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+            csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+            return csv;
+        } catch (e) {
+            console.error(e);
+            return "";
+        }
+    }
+    return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - Directives Légales</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="policy.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: left;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                max-width: 90%;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            h3 {
+                font-size: 1.2rem;
+            }
+            p, ul {
+                font-size: 0.875rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+                max-width: 95%;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.2rem;
+            }
+            h3 {
+                font-size: 1rem;
+            }
+            p, ul {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <!-- Live Background Canvas -->
+    <canvas id="background-canvas"></canvas>
+
+    <!-- Centered Text Content -->
+    <div class="container">
+        <h1 class="text-3xl font-bold text-red-600">Directives Légales</h1>
+        <div class="mt-6">
+            <h2 class="text-2xl font-semibold">Cadre Juridique et Directives pour Thundra Music</h2>
+            <p class="text-sm mt-2">Thundra Music n'est actuellement pas enregistré comme entité juridique dans aucun pays au 04 mai 2025. Cependant, nous sommes pleinement engagés à respecter une large gamme de lois, réglementations et directives internationales pour garantir l'intégrité, la sécurité et la légalité de notre écosystème MusicFi décentralisé. Cela inclut l'adhésion aux règles régissant les plateformes numériques, les actifs numériques, les marques déposées, le droit d'auteur, le commerce international, la protection de la vie privée et de l'identité, les politiques sur les cookies dans l'UE, le règlement sur les marchés des crypto-actifs (MiCA), les cadres crypto spécifiques aux pays, et la juridiction de la Cour Internationale de Justice, entre autres. Notre objectif est d'opérer dans les limites des normes juridiques mondiales tout en travaillant à nous enregistrer dans plusieurs pays pour élargir nos services et soutenir notre communauté croissante.</p>
+            <p class="text-sm mt-2">Ces documents de Directives Légales servent de ressource essentielle pour tous les utilisateurs de l'application Thundra Music, du site web et des services associés (collectivement, la "Plateforme"). Nous vous encourageons à lire et comprendre ces directives en profondeur, car elles font partie de l'accord contractuel que vous acceptez en utilisant nos services. En cas de litige, vous pouvez nous contacter directement à <a href="mailto:contact.thundramusic@gmail.com" class="text-red-600 hover:underline">contact.thundramusic@gmail.com</a> pour obtenir de l'assistance, ou engager une action en justice conformément à votre juridiction locale, aux lois nationales ou aux réglementations régionales (par exemple, les lois de l'UE), avec notre coopération pour garantir la transparence et le soutien.</p>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">1. Statut Actuel et Engagement à la Conformité</h3>
+                <p class="text-sm mt-2">À ce jour, Thundra Music fonctionne comme une entité non enregistrée, concentrée sur la construction de son écosystème MusicFi alimenté par la Blockchain et l'IA. Malgré ce statut, nous nous alignons proactivement sur les cadres juridiques internationaux pour protéger les utilisateurs et maintenir la confiance. Nos efforts de conformité incluent :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Réglementations des Plateformes Numériques :</strong> Nous respectons les lois générales sur les services numériques, comme le Digital Services Act (DSA) de l'UE, qui exige la transparence dans la modération de contenu, les droits des utilisateurs et la responsabilité des plateformes, bien que nous ne soyons pas encore enregistrés.</li>
+                    <li><strong>Actifs Numériques et Cadres Crypto :</strong> Nous nous conformons aux réglementations émergentes comme MiCA (en vigueur dans l'UE), qui régit les actifs crypto, les stablecoins et l'intégrité du marché. Nous nous alignons également sur les cadres spécifiques aux pays, comme les directives de la SEC aux États-Unis, la Loi sur les Services de Paiement au Japon, et les règles de l'Autorité Monétaire de Singapour (MAS), assurant que les transactions en jetons $ICE répondent aux normes de lutte contre le blanchiment d'argent (AML) et de connaissance du client (KYC) lorsque applicable.</li>
+                    <li><strong>Marques Déposées et Droit d'Auteur :</strong> Nous respectons les droits de propriété intellectuelle, garantissant que les téléversements de musique, les NFT et l'image de marque de la plateforme respectent les lois internationales sur le droit d'auteur (par exemple, Convention de Berne) et les réglementations sur les marques (par exemple, OMPI). Les utilisateurs doivent posséder les droits sur leur contenu ou obtenir des licences, et nous mettons en place des outils pour détecter et traiter les violations.</li>
+                    <li><strong>Commerce International :</strong> Nos opérations transfrontalières suivent les principes de l'Organisation Mondiale du Commerce (OMC) et les lois commerciales locales, assurant un accès équitable au Thundra Market et respectant les contrôles à l'exportation ou les sanctions lorsque pertinent.</li>
+                    <li><strong>Protection de la Vie Privée et de l'Identité :</strong> Nous respectons les normes mondiales de confidentialité, y compris le Règlement Général sur la Protection des Données (RGPD) dans l'UE, la California Consumer Privacy Act (CCPA) aux États-Unis, et des lois similaires dans le monde. Les données des utilisateurs sont cryptées, anonymisées sur la Blockchain, et partagées avec des tiers (par exemple, Blockchain ICE) uniquement avec consentement, conformément aux mesures de prévention du vol d'identité.</li>
+                    <li><strong>Politiques sur les Cookies dans l'UE :</strong> Pour les utilisateurs dans l'UE, nous mettons en place des mécanismes de consentement aux cookies conformément à la Directive ePrivacy, garantissant la transparence dans la collecte de données et l'opt-in des utilisateurs pour les cookies non essentiels.</li>
+                    <li><strong>Cour Internationale de Justice (CIJ) :</strong> Nous reconnaissons le rôle de la CIJ dans la résolution des litiges internationaux et nous engageons à coopérer avec sa juridiction si les litiges dépassent les frontières nationales, assurant que nos opérations s'alignent sur les normes juridiques mondiales.</li>
+                </ul>
+                <p class="text-sm mt-2">Notre utilisation de la technologie Blockchain, en particulier la Blockchain ICE, renforce la transparence en enregistrant toutes les transactions, garantissant qu'elles sont vérifiables et audibles, en accord avec les attentes juridiques pour les systèmes décentralisés.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">2. Intention de S'Enregistrer dans Plusieurs Pays</h3>
+                <p class="text-sm mt-2">Thundra Music a l'intention de s'enregistrer comme entité juridique dans autant de pays que possible pour élargir nos services, renforcer la confiance des utilisateurs et se conformer aux lois locales. Ce processus d'enregistrement sera progressif, guidé par l'expansion de nos services et la présence de notre base d'utilisateurs, en particulier les artistes et modérateurs qui forment le pilier de notre communauté. Nos plans incluent :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Expansion des Services :</strong> À mesure que nous grandissons, nous nous enregistrerons dans des pays avec une activité utilisateur significative (par exemple, États-Unis, nations de l'UE, Japon, Singapour) pour offrir des services localisés comme des passerelles fiat-crypto, des distributions de récompenses conformes aux impôts, et un soutien juridique pour les transactions sur le marché.</li>
+                    <li><strong>Soutien Physique aux Utilisateurs :</strong> L'enregistrement nous permettra d'établir des bureaux physiques ou des représentants pour aider les artistes avec des événements en direct, des expositions de NFT, ou des conseils juridiques, et pour soutenir les modérateurs avec des formations ou la résolution de litiges dans leurs régions.</li>
+                    <li><strong>Conformité Spécifique aux Pays :</strong> Chaque enregistrement s'alignera sur les lois locales, comme l'enregistrement en tant qu'entité financière sous MiCA dans l'UE, l'obtention d'une licence de transmetteur d'argent aux États-Unis, ou le respect de l'Agence des Services Financiers (FSA) du Japon pour les opérations crypto.</li>
+                </ul>
+                <p class="text-sm mt-2">Cet engagement à l'enregistrement souligne notre dévouement à la transparence, à la confiance et à la légalité, assurant que chaque utilisateur opère dans un cadre conforme tout en exploitant la technologie Blockchain pour des transactions sécurisées et transparentes.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">3. Responsabilités des Utilisateurs et Résolution des Litiges</h3>
+                <p class="text-sm mt-2">En utilisant Thundra Music, vous acceptez de respecter et d'adhérer à ces Directives Légales, collaborant avec nous pour faire respecter les règles et réglementations pour le bien-être de l'écosystème. Vos responsabilités incluent :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Lecture de la Documentation In-App :</strong> Nous vous encourageons à consulter ces directives et autres documents juridiques in-app (par exemple, Conditions Générales, Politique de Confidentialité) pour rester informé de vos droits et obligations.</li>
+                    <li><strong>Respect des Directives :</strong> Vous devez suivre les directives juridiques que nous fournissons pour votre protection et sécurité, comme sécuriser votre portefeuille, signaler des activités suspectes, et respecter les droits de propriété intellectuelle.</li>
+                    <li><strong>Collaboration dans l'Application :</strong> Vous êtes tenu d'aider à faire respecter les règles en signalant les violations, en participant aux votes de gouvernance, et en soutenant les modérateurs, contribuant à une communauté sûre et équitable.</li>
+                    <li><strong>Résolution des Litiges :</strong> En cas de litige, vous pouvez nous contacter à <a href="mailto:contact.thundramusic@gmail.com" class="text-red-600 hover:underline">contact.thundramusic@gmail.com</a> pour obtenir de l'assistance. Nous travaillerons de manière transparente avec vous pour résoudre les problèmes. Si une action en justice est nécessaire, elle doit s'aligner sur votre juridiction locale, les lois nationales ou les réglementations régionales (par exemple, les lois de l'UE), et nous coopérerons pleinement, fournissant des enregistrements Blockchain comme preuves si applicable.</li>
+                </ul>
+                <p class="text-sm mt-2">Nous nous engageons à être ouverts à tous les cas juridiques, assurant une assistance dans la juridiction de votre pays tout en maintenant la transparence grâce aux enregistrements Blockchain de toutes les transactions et actions.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">4. Directives Additionnelles et Participation des Utilisateurs</h3>
+                <p class="text-sm mt-2">Au-delà de nos directives internes, les utilisateurs doivent se préparer à respecter et participer à des règles supplémentaires fournies par des entités externes :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Gouvernements et Autorités Réglementaires :</strong> Les directives des gouvernements nationaux (par exemple, SEC des États-Unis, régulateurs MiCA de l'UE) ou des organismes internationaux (par exemple, Groupe d'Action Financière - GAFI) peuvent imposer des exigences de KYC, AML ou de déclaration fiscale. Les utilisateurs doivent fournir les informations demandées et collaborer avec ces autorités lorsque requis.</li>
+                    <li><strong>Tribunaux de Justice :</strong> Si les litiges s'intensifient jusqu'aux tribunaux (par exemple, tribunaux nationaux ou la Cour Internationale de Justice), les utilisateurs peuvent devoir fournir des preuves ou témoigner, et nous les aiderons en partageant des données vérifiées par Blockchain tout en protégeant leur confidentialité.</li>
+                    <li><strong>Organisations et Tiers :</strong> Les partenaires comme la Blockchain ICE ou les passerelles de paiement peuvent émettre des règles supplémentaires (par exemple, limites de transaction, politiques de partage de données). Les utilisateurs doivent y adhérer et aider à résoudre les problèmes liés.</li>
+                </ul>
+                <p class="text-sm mt-2">Votre participation à promouvoir la transparence et la collaboration avec ces parties est essentielle. Cela peut inclure la fourniture de commentaires, la participation à des audits communautaires, ou l'assistance dans des enquêtes juridiques, tout en bénéficiant de la confiance et de la sécurité offertes par notre infrastructure Blockchain.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">5. Initiatives et Opportunités de l'Équipe Thundra</h3>
+                <p class="text-sm mt-2">L'Équipe Thundra est dédiée à soutenir l'écosystème à travers des opportunités éducatives et professionnelles, renforçant l'engagement des utilisateurs et le développement des compétences :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Thundra Learning :</strong> Nous offrons une plateforme d'apprentissage dédiée avec des cours sur la technologie Blockchain, la création musicale avec IA, la conformité juridique, et la navigation dans l'écosystème. Ces ressources sont accessibles via l'application, le site web, ou des documents dédiés pour les développeurs, le personnel, les partenaires et les utilisateurs.</li>
+                    <li><strong>Opportunités d'Emploi :</strong> Nous proposons des offres d'emploi pour des rôles comme développeurs, modérateurs, spécialistes du marketing, et conseillers juridiques, annoncées via notre site web, application et réseaux sociaux (par exemple, X, LinkedIn).</li>
+                    <li><strong>Stages et Volontariat :</strong> Les stages pour les étudiants et les programmes de volontariat pour les membres de la communauté permettent une expérience pratique en production musicale, modération ou développement Blockchain, avec des opportunités de gagner des jetons $ICE ou des certifications.</li>
+                    <li><strong>Sessions de Formation :</strong> Des webinaires et ateliers réguliers couvrent des sujets comme la sécurité des contrats intelligents, les risques du trading crypto, et la participation à la gouvernance, favorisant une communauté informée.</li>
+                    <li><strong>Formation Certifiée Professionnelle :</strong> Nous collaborons avec des institutions accréditées pour offrir des certifications en Blockchain, production musicale avec IA, et gestion d'actifs numériques, améliorant les perspectives de carrière pour les utilisateurs et le personnel.</li>
+                </ul>
+                <p class="text-sm mt-2">Ces initiatives sont annoncées via nos canaux officiels, assurant que tous les utilisateurs ont accès à des opportunités de croissance tout en contribuant au succès de l'écosystème.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">6. Importance de l'Enregistrement et de la Transparence</h3>
+                <p class="text-sm mt-2">L'enregistrement dans les pays est un pilier de notre mission pour bâtir la confiance et assurer la conformité juridique. Cela nous permet de :</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Renforcer la Confiance :</strong> Un enregistrement formel signale notre engagement envers les utilisateurs, les régulateurs et les partenaires, favorisant la confiance dans notre modèle décentralisé.</li>
+                    <li><strong>Assurer la Légalité :</strong> En nous enregistrant, nous pouvons adapter nos services aux lois locales, garantissant que les utilisateurs opèrent légalement lorsqu'ils gagnent des jetons $ICE, échangent des NFT, ou participent à la gouvernance.</li>
+                    <li><strong>Exploiter la Transparence Blockchain :</strong> Tous les enregistrements et actions juridiques connexes seront documentés sur la Blockchain, fournissant un enregistrement infalsifiable de nos efforts de conformité et des transactions des utilisateurs.</li>
+                </ul>
+                <p class="text-sm mt-2">Les utilisateurs bénéficient de cette approche en utilisant une plateforme qui priorise leur protection juridique et s'aligne sur les normes mondiales, renforcée par la transparence de la technologie Blockchain.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">7. Informations de Contact</h3>
+                <p class="text-sm mt-2">Pour des demandes juridiques, des clarifications sur les directives ou un soutien, veuillez nous contacter à <a href="mailto:contact.thundramusic@gmail.com" class="text-red-600 hover:underline">contact.thundramusic@gmail.com</a>.</p>
+                <p class="text-sm mt-2">Dernière Mise à Jour : 04 mai 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect light/dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+        }
+
+        // Theme Toggle (if needed, can be expanded with a button)
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            }
+        }
+
+        // Live Background Animation
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 10;
+                this.speedX = (Math.random() * 2 - 1) * 0.5;
+                this.speedY = (Math.random() * 2 - 1) * 0.5;
+                this.directionY = Math.random() > 0.5 ? 1 : -1;
+                this.text = '♪';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY * this.directionY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillStyle = '#ff0000';
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles.forEach(particle => {
+                particle.x = Math.random() * canvas.width;
+                particle.y = Math.random() * canvas.height;
+            });
+        });
+    </script>
+</body>
+</html>

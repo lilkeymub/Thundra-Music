@@ -1,0 +1,328 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Ads - Business Solutions</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        html, body {
+            position: relative;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: white;
+            color: black;
+            transition: background 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background: black;
+            color: white;
+        }
+        .canvas-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 20vh;
+            margin-top: 4rem;
+            position: relative;
+        }
+        .button {
+            @apply bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .section-title i {
+            color: #e02424;
+        }
+        .section-title h2 {
+            color: black;
+            font-weight: bold;
+        }
+        .section-wrapper {
+            position: relative;
+            overflow: hidden;
+            padding: 2rem 0;
+        }
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #e02424;
+            font-size: 1.5rem;
+            z-index: 10;
+        }
+        .back-button:hover {
+            color: #b91c1c;
+        }
+        @media (max-width: 768px) {
+            h1 { @apply text-3xl; }
+            p { @apply text-base; }
+            .container { @apply px-4; }
+            .button { @apply text-sm px-4 py-2; }
+            .back-button { font-size: 1.25rem; }
+        }
+        @media (max-width: 480px) {
+            h1 { @apply text-2xl; }
+            p { @apply text-sm; }
+            .button { @apply text-xs px-3 py-1; }
+            .back-button { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body class="bg-white text-black transition-colors duration-300">
+    <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i></a>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-ad text-5xl text-red-600"></i>
+                <h1 class="text-5xl font-bold text-red-600">Thundra Ads - Revolutionize Your Business</h1>
+            </div>
+            <p class="text-xl mt-4">Unlock Outstanding Opportunities with Thundra Ads</p>
+            <br><br>
+            <!-- For Business Button -->
+        <div class="mt-16">
+            <a href="#" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-briefcase mr-2"></i> Coming Soon</a>
+        </div>
+        </div>
+        <br><br>
+
+        <div class="section-wrapper">
+            <section class="my-8">
+                <div class="section-title">
+                    <i class="fas fa-bullhorn text-2xl"></i>
+                    <h2 class="text-3xl font-semibold">Welcome to Thundra Ads</h2>
+                </div>
+                <p class="text-lg mt-4 max-w-3xl mx-auto">
+                    Thundra Ads is a groundbreaking advertising system designed exclusively for businesses, startups, companies, and individuals running commerce ventures. By integrating seamlessly into the Thundra Music ecosystem, Thundra Ads offers an unparalleled opportunity to showcase your products to our vast and engaged userbase. This platform is not just about visibility—it’s about transforming your brand’s reach, driving user acquisition, and enabling you to earn through innovative ad solutions.
+                </p>
+            </section>
+            <canvas id="welcome-canvas" class="canvas-background"></canvas>
+        </div>
+        <br><br>
+
+        <div class="section-wrapper">
+            <section class="my-8">
+                <div class="section-title">
+                    <i class="fas fa-cogs text-2xl"></i>
+                    <h2 class="text-3xl font-semibold">How Thundra Ads Works</h2>
+                </div>
+                <p class="text-lg mt-4 max-w-3xl mx-auto">
+                    Thundra Ads leverages our ecosystem’s hybrid Web 2 + Web 3 technology to deliver targeted, dynamic advertisements across multiple channels—display, video, and social integrations. Businesses can create personalized ad campaigns that resonate with our diverse audience, utilizing real-time data to optimize exposure. Our large userbase, actively engaged with music and community features, becomes your marketplace, where your products gain traction through interactive and rewarding ad experiences. By connecting with users who earn XP and ICE tokens, your brand can tap into a motivated audience eager to explore new offerings.
+                </p>
+            </section>
+            <canvas id="how-it-works-canvas" class="canvas-background"></canvas>
+        </div>
+        <br><br>
+
+        <div class="section-wrapper">
+            <section class="my-8">
+                <div class="section-title">
+                    <i class="fas fa-star text-2xl"></i>
+                    <h2 class="text-3xl font-semibold">Benefits for Your Business</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 max-w-4xl mx-auto">
+                    <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                        <i class="fas fa-bullseye text-2xl text-red-600 mb-3"></i>
+                        <h3 class="text-lg font-semibold">Targeted Exposure</h3>
+                        <p class="text-sm mt-2">Reach millions of users with precision targeting based on interests, behaviors, and engagement patterns within our ecosystem.</p>
+                    </div>
+                    <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                        <i class="fas fa-chart-line text-2xl text-red-600 mb-3"></i>
+                        <h3 class="text-lg font-semibold">Boost Visibility</h3>
+                        <p class="text-sm mt-2">Increase your brand’s visibility across our platform, driving traffic and potential customers to your commerce channels.</p>
+                    </div>
+                    <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                        <i class="fas fa-coins text-2xl text-red-600 mb-3"></i>
+                        <h3 class="text-lg font-semibold">Earn Through Engagement</h3>
+                        <p class="text-sm mt-2">Benefit from a revenue-sharing model where user interactions with your ads contribute to your earnings alongside our token ecosystem.</p>
+                    </div>
+                    <div class="bg-gray-200 dark:bg-gray-800 p-4 rounded">
+                        <i class="fas fa-users text-2xl text-red-600 mb-3"></i>
+                        <h3 class="text-lg font-semibold">Grow Your Userbase</h3>
+                        <p class="text-sm mt-2">Convert engaged users into loyal customers, expanding your reach beyond our ecosystem through word-of-mouth and shared content.</p>
+                    </div>
+                </div>
+            </section>
+            <canvas id="benefits-canvas" class="canvas-background"></canvas>
+        </div>
+        <br><br>
+
+        <div class="section-wrapper">
+            <section class="my-8">
+                <div class="section-title">
+                    <i class="fas fa-check-circle text-2xl"></i>
+                    <h2 class="text-3xl font-semibold">Why Choose Thundra Ads?</h2>
+                </div>
+                <p class="text-lg mt-4 max-w-3xl mx-auto">
+                    Traditional advertising often falls short for startups and small businesses due to high costs and limited targeting. Thundra Ads levels the playing field by offering a cost-effective, scalable solution that integrates with our blockchain-backed ecosystem. Whether you’re a solo entrepreneur launching a product or a company seeking to penetrate new markets, Thundra Ads provides the tools to amplify your presence. With dynamic creative optimization and real-time analytics, you can adjust campaigns on the fly, ensuring maximum ROI. This system empowers you to break free from conventional barriers, connecting directly with a community that values innovation and rewards participation.
+                </p>
+            </section>
+            <canvas id="why-choose-canvas" class="canvas-background"></canvas>
+        </div>
+        <br><br>
+
+        <div class="section-wrapper">
+            <section class="my-8">
+                <div class="section-title">
+                    <i class="fas fa-rocket text-2xl"></i>
+                    <h2 class="text-3xl font-semibold">Get Started</h2>
+                </div>
+                <p class="text-lg mt-4 max-w-3xl mx-auto">
+                    To begin revolutionizing your advertising strategy, businesses and individuals need to create an account within the Thundra ecosystem. Stay tuned for the launch by keeping an eye on this page—exciting updates are on the horizon!
+                </p>
+                <br>
+                <!-- For Business Button -->
+        <div class="mt-16">
+            <a href="#" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-briefcase mr-2"></i> Coming Soon</a>
+        </div>
+            </section>
+            <canvas id="get-started-canvas" class="canvas-background"></canvas>
+        </div>
+    </div>
+
+    <footer class="text-center text-sm py-4">
+        <div>
+            <a href="privacy.html" class="text-red-600 hover:underline mx-2">Privacy Policy</a>
+            <a href="conduct.html" class="text-red-600 hover:underline mx-2">Community Code of Conduct</a>
+            <a href="conditions.html" class="text-red-600 hover:underline mx-2">General User Terms & Conditions</a>
+            <a href="conditions.html" class="text-red-600 hover:underline mx-2">Legal & Guidelines</a>
+        </div>
+    </footer>
+
+    <script>
+        const canvases = [
+            document.getElementById('header-canvas'),
+            document.getElementById('welcome-canvas'),
+            document.getElementById('how-it-works-canvas'),
+            document.getElementById('benefits-canvas'),
+            document.getElementById('why-choose-canvas'),
+            document.getElementById('get-started-canvas')
+        ];
+
+        canvases.forEach(canvas => {
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+
+            let particles = [];
+            const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 20 + 10;
+                    this.speedX = (Math.random() * 2 - 1) * 0.5;
+                    this.speedY = (Math.random() * 2 - 1) * 0.5;
+                    this.text = '♪';
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.font = `${this.size}px Arial`;
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillText(this.text, this.x, this.y);
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+
+            initParticles();
+            animate();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+                particles.forEach(particle => {
+                    particle.x = Math.random() * canvas.width;
+                    particle.y = Math.random() * canvas.height;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+      return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+    if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+        try {
+            var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+            var firstSheetName = workbook.SheetNames[0];
+            var worksheet = workbook.Sheets[firstSheetName];
+
+            // Convert sheet to JSON to filter blank rows
+            var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+            // Filter out blank rows (rows where all cells are empty, null, or undefined)
+            var filteredData = jsonData.filter(row => row.some(filledCell));
+
+            // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+            var headerRowIndex = filteredData.findIndex((row, index) =>
+              row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+            );
+            // Fallback
+            if (headerRowIndex === -1 || headerRowIndex > 25) {
+              headerRowIndex = 0;
+            }
+
+            // Convert filtered JSON back to CSV
+            var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+            csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+            return csv;
+        } catch (e) {
+            console.error(e);
+            return "";
+        }
+    }
+    return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - Community Code of Conduct</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="policy.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: left;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                max-width: 90%;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            h3 {
+                font-size: 1.2rem;
+            }
+            p, ul {
+                font-size: 0.875rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+                max-width: 95%;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.2rem;
+            }
+            h3 {
+                font-size: 1rem;
+            }
+            p, ul {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <!-- Live Background Canvas -->
+    <canvas id="background-canvas"></canvas>
+
+    <!-- Centered Text Content -->
+    <div class="container">
+        <h1 class="text-3xl font-bold text-red-600">Community Code of Conduct</h1>
+        <div class="mt-6">
+            <h2 class="text-2xl font-semibold">Our Vision for a Thriving, Inclusive Community</h2>
+            <p class="text-sm mt-2">At Thundra Music, we are more than just a platform—we are a global movement built on the principles of Blockchain and AI, designed to democratize the music industry and empower every individual. We believe that the world belongs to all of us, and everyone has a say and a stake in shaping its future, whether online or offline, in areas like economy, finance, media, and beyond. Our mission is to create a decentralized, transparent ecosystem where anyone can come, share their passions—especially in music—and be rewarded for simply enjoying what they love most. Powered by AI for innovative music creation and decentralized through Blockchain for fairness and transparency, Thundra Music is a space where creativity thrives, and users are incentivized with $ICE tokens and XP for their engagement, whether they’re streaming music, participating in chats, joining groups, or exploring the Thundra Market.</p>
+            <p class="text-sm mt-2">However, with great freedom comes great responsibility. While we champion openness and inclusivity, we are steadfast in our commitment to ensuring that Thundra Music remains a safe, joyful, and prosperous environment for all users. We will not tolerate excessive, malicious, or dangerous behaviors that threaten the calmness, ambiance, joy, health, or prosperity of our users and ecosystem. This includes suspicious activities, actions by bad actors, and even potential terrorist activities that could undermine the integrity of our platform. To achieve this, we’ve implemented a groundbreaking decentralized moderation model, alongside strict measures, sanctions, and actions, to promote a healthy ecosystem—even in a decentralized and open-source environment.</p>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">1. Core Principles: Unity, Transparency, and Trust</h3>
+                <p class="text-sm mt-2">Our Community Code of Conduct is rooted in three core principles: unity, transparency, and trust. We envision a future where users not only earn rewards but also contribute to building a healthier space for wealth creation, idea sharing, project collaboration, and the creation of unforgettable moments—all centered around trust. While Blockchain technology inherently operates on a trustless system through cryptographic verification, we recognize that mistrust (or "méfiance") can hinder collaboration and growth. At Thundra Music, we are committed to encouraging and accompanying our users in fostering trust-based interactions. We aim to unite our community to push the boundaries of the Blockchain and AI industries, unlocking new possibilities and opportunities for all. However, to achieve this vision, we must establish clear guidelines and enforcement mechanisms to ensure the ecosystem remains a safe and thriving space.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">2. Expected Behavior: Building a Positive Community</h3>
+                <p class="text-sm mt-2">To maintain a vibrant and inclusive community, we expect all users to adhere to the following standards:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Respect All Users:</strong> Treat everyone with kindness, empathy, and respect, regardless of their tier, role, background, or beliefs. Whether you’re a free user, a premium subscriber, an artist, or a community member, every individual deserves to feel valued and safe.</li>
+                    <li><strong>Encourage Creativity:</strong> Share your passions—whether through music creation, discussions in audio spaces, or marketplace contributions—and support others in doing the same. Celebrate the diversity of ideas and talents within our ecosystem.</li>
+                    <li><strong>Engage Constructively:</strong> Use chats, groups, and community spaces to foster meaningful conversations. Provide constructive feedback, collaborate on projects, and contribute to a positive atmosphere where everyone can grow.</li>
+                    <li><strong>Follow Platform Guidelines:</strong> Adhere to all platform-specific rules, such as responsible use of staked DMs (where $ICE tokens are staked to initiate conversations and returned after 90 days if no reply is received) and content guidelines for music, posts, and ads.</li>
+                </ul>
+                <p class="text-sm mt-2">By embodying these behaviors, you help create a community where users can thrive, earn rewards, and build lasting connections—all while enjoying the transformative power of AI-generated music and Blockchain technology.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">3. Unacceptable Behavior: Protecting Our Ecosystem</h3>
+                <p class="text-sm mt-2">We are committed to maintaining the integrity of our ecosystem, and certain behaviors will not be tolerated. These include, but are not limited to:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Harassment and Bullying:</strong> Any form of harassment, bullying, hate speech, or discrimination based on race, gender, religion, sexuality, or any other characteristic is strictly prohibited. This includes verbal abuse in chats, derogatory comments in groups, or targeted attacks in audio spaces.</li>
+                    <li><strong>Spamming and Scamming:</strong> Spamming users with unsolicited messages, posting repetitive or irrelevant content, or attempting to scam others (e.g., through fraudulent staked DMs or fake marketplace listings) undermines the trust and safety of our community.</li>
+                    <li><strong>Illegal or Explicit Content:</strong> Sharing or promoting illegal content, explicit material, or anything that violates copyright laws or our content guidelines is not allowed. This applies to music uploads, marketplace items, ads, and posts.</li>
+                    <li><strong>Suspicious or Malicious Activities:</strong> Engaging in activities that could harm the platform or its users, such as hacking, phishing, or spreading malware, will result in immediate action.</li>
+                    <li><strong>Terrorist or Extremist Activities:</strong> Any behavior linked to terrorism, extremism, or the promotion of violence—whether through content, communication, or financial transactions (e.g., misuse of $ICE tokens)—is a severe violation and will be met with the strictest measures, including collaboration with legal authorities if necessary.</li>
+                </ul>
+                <p class="text-sm mt-2">These behaviors threaten the well-being of our users and the overall health of our ecosystem. We take such violations seriously and have implemented robust mechanisms to address them swiftly and effectively.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">4. Decentralized Moderation: A New Model for Community Safety</h3>
+                <p class="text-sm mt-2">To safeguard our ecosystem while staying true to our decentralized ethos, we’ve introduced a pioneering decentralized moderation model. Unlike traditional platforms that rely on centralized teams, our moderation system leverages the power of the community and Blockchain technology to ensure fairness, transparency, and accountability. Here’s how it works:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Role of Decentralized Moderators:</strong> Decentralized moderators are trusted community members selected based on their devotion, engagement, loyalty, personality, and love for the community—prove your worth! The selection process begins with a voluntary application where users submit a statement outlining their dedication to Thundra Music. Devotion is measured through their activity history, such as consistent participation in chats, supporting artists with $ICE token purchases, or hosting community events. Engagement is assessed by their active contributions, like informally mediating disputes or proactively reporting issues. Loyalty is reflected in their long-term presence and consistency on the platform, showing a deep commitment to its growth. Personality is evaluated through their interactions, their ability to inspire others, and their role in maintaining a positive atmosphere. Community love is demonstrated by their efforts to support fellow users, foster unity, and promote inclusivity. Once these qualities are assessed, candidates stake a significant amount of $ICE to prove their seriousness, and users vote through a Blockchain-based governance system. Elected moderators oversee community interactions across chats, groups, audio spaces, and the Thundra Market, reviewing reported content, investigating suspicious activities, and enforcing the Community Code of Conduct.</li>
+                    <li><strong>Transparency and Accountability:</strong> All moderation actions are recorded on the Blockchain, ensuring complete transparency. Users can view a public ledger of moderation decisions, including warnings, bans, and content removals, to hold moderators accountable. Moderators who abuse their power or fail to act responsibly can be voted out by the community, with their staked $ICE tokens redistributed to active users as rewards.</li>
+                    <li><strong>Proactive Monitoring:</strong> Moderators use AI-powered tools to proactively monitor the platform for potential violations, such as hate speech, spam, or suspicious financial transactions. For example, if a user attempts to misuse staked DMs for scams, moderators can intervene, freeze the transaction, and investigate the account. Similarly, if extremist content is detected in an audio space, moderators can shut down the space and ban the offending user, with all actions logged on the Blockchain.</li>
+                    <li><strong>Counteracting Threats:</strong> In cases of severe threats—like terrorist activities or coordinated malicious attacks—moderators collaborate with Thundra’s security team and external authorities to take swift action. This may include suspending accounts, seizing $ICE tokens involved in illicit activities, and providing evidence to law enforcement, all while maintaining user privacy through anonymized data handling.</li>
+                </ul>
+                <p class="text-sm mt-2">Our decentralized moderation model ensures that power is distributed across the community, reducing the risk of bias or censorship while maintaining a safe and enjoyable environment for all users. It’s a testament to our commitment to balancing freedom with responsibility in a decentralized ecosystem.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">5. Community Contributions: Everyone’s Role in Promoting Peace</h3>
+                <p class="text-sm mt-2">While decentralized moderators play a critical role, every user has a part in promoting peace, healthiness, and prosperity within the Thundra Music ecosystem. We believe that a thriving future of opportunities is built through collective effort, and non-moderators can contribute in meaningful ways:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Reporting Violations:</strong> Users can report any behavior or content that violates the Community Code of Conduct directly through the platform. Whether it’s a harassing message in a chat, a suspicious listing in the Thundra Market, or an inappropriate audio space, your report helps moderators take action quickly. Reports are anonymous to protect your privacy, and Blockchain ensures they cannot be tampered with.</li>
+                    <li><strong>Flagging Suspicious Activity:</strong> If you notice unusual patterns—like a user repeatedly sending staked DMs without responses, or an account posting links to phishing sites—you can flag the activity for review. AI tools analyze these flags to prioritize cases for moderators, ensuring rapid response to potential threats.</li>
+                    <li><strong>Promoting Positivity:</strong> Actively contribute to a positive community by sharing uplifting content, supporting artists through $ICE token purchases, and engaging in constructive discussions. For example, hosting an audio space to discuss music trends or collaborating on a community project can foster a sense of unity and joy.</li>
+                    <li><strong>Educating Others:</strong> Share knowledge about safe practices, such as how to use staked DMs responsibly or how to spot scams in the Thundra Market. By educating your peers, you help create a more informed and resilient community.</li>
+                    <li><strong>Participating in Governance:</strong> Non-moderators can vote for decentralized moderators and propose changes to community guidelines through our Blockchain-based governance system. Your voice helps shape the future of Thundra Music, ensuring it remains a space that reflects the values of its users.</li>
+                </ul>
+                <p class="text-sm mt-2">By working together, moderators and non-moderators alike can build a community that not only thrives today but also paves the way for a future filled with opportunities, innovation, and shared success.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">6. Consequences of Violations: Enforcing Accountability</h3>
+                <p class="text-sm mt-2">To protect the healthiness of our ecosystem, violations of the Community Code of Conduct will result in appropriate consequences, depending on the severity of the offense:</p>
+                <ul class="list-disc list-inside text-sm mt-2">
+                    <li><strong>Warnings:</strong> Minor infractions, such as a single instance of inappropriate language in a chat, may result in a warning. Users will be notified of the violation and given guidance on how to correct their behavior.</li>
+                    <li><strong>Temporary Bans:</strong> Repeated or more serious violations, such as persistent spamming or harassment, may lead to a temporary ban. During this period, users cannot access platform features like streaming, chatting, or marketplace transactions.</li>
+                    <li><strong>Permanent Suspension:</strong> Severe violations, such as engaging in scams, posting illegal content, or involvement in terrorist activities, will result in permanent account suspension. All $ICE tokens associated with the account may be seized and redistributed to the community as rewards.</li>
+                    <li><strong>Legal Action:</strong> In cases of extreme misconduct, such as terrorism or coordinated malicious attacks, we will cooperate with legal authorities to ensure justice is served. This may include providing Blockchain records as evidence while protecting the privacy of innocent users.</li>
+                </ul>
+                <p class="text-sm mt-2">All enforcement actions are logged on the Blockchain for transparency, and users have the right to appeal decisions through our governance system. Our goal is not to punish but to protect, ensuring that Thundra Music remains a safe and prosperous space for all.</p>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">7. Building a Future of Opportunities Together</h3>
+                <p class="text-sm mt-2">At Thundra Music, we dream of a world where unity, transparency, and trust are the foundation of every interaction. While Blockchain and AI offer incredible possibilities, they also require us to be vigilant in maintaining a healthy ecosystem. We are committed to enforcing this Community Code of Conduct with fairness and accountability, even in a decentralized and open-source environment. By uniting as a community—moderators, users, artists, and creators—we can push the Blockchain and AI industries beyond their current limits, creating a future filled with opportunities for all. Let’s work together to make Thundra Music a place where creativity flourishes, trust is nurtured, and every user can enjoy unforgettable moments in a safe and thriving ecosystem.</p>
+            </div>
+
+            <div class="mt-4">
+                <p class="text-sm">Last Updated: May 04, 2025</p>
+                <p class="text-sm">Report violations or share feedback at <a href="mailto:contact.thundramusic@gmail.com" class="text-red-600 hover:underline">contact.thundramusic@gmail.com</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-detect light/dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+        }
+
+        // Theme Toggle (if needed, can be expanded with a button)
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            }
+        }
+
+        // Live Background Animation
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 10;
+                this.speedX = (Math.random() * 2 - 1) * 0.5;
+                this.speedY = (Math.random() * 2 - 1) * 0.5;
+                this.directionY = Math.random() > 0.5 ? 1 : -1;
+                this.text = '♪';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY * this.directionY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillStyle = '#ff0000';
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles.forEach(particle => {
+                particle.x = Math.random() * canvas.width;
+                particle.y = Math.random() * canvas.height;
+            });
+        });
+    </script>
+</body>
+</html>

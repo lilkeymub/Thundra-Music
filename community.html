@@ -1,0 +1,286 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - For Community</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        html, body {
+            position: relative;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: #e02424;
+            font-size: 1.5rem;
+            z-index: 10;
+        }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+        .container, section, footer, div {
+            position: relative;
+            z-index: 1;
+        }
+        .feature-card {
+            @apply bg-gray-200 dark:bg-gray-800 p-6 rounded-lg shadow-md transition hover:shadow-lg;
+        }
+        .title-with-icon {
+            @apply flex items-center justify-center space-x-3;
+        }
+        @media (max-width: 768px) {
+            h1 { @apply text-4xl; }
+            h2 { @apply text-xl; }
+            p { @apply text-base; }
+            .container { @apply px-4; }
+            .grid { @apply grid-cols-1; }
+            .title-with-icon i { @apply text-3xl; }
+            .feature-card { @apply p-4; }
+            .feature-card h3 { @apply text-lg; }
+            .feature-card p { @apply text-sm; }
+        }
+        @media (max-width: 480px) {
+            h1 { @apply text-2xl; }
+            h2 { @apply text-lg; }
+            p { @apply text-sm; }
+            .container { @apply px-3; }
+            .grid { @apply gap-4; }
+            .title-with-icon i { @apply text-2xl; }
+            button { @apply text-sm px-4 py-2; }
+            .feature-card { @apply p-3; }
+            .feature-card h3 { @apply text-base; }
+            .feature-card p { @apply text-xs; }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i></a>
+    <canvas id="background-canvas"></canvas>
+
+    <div class="container mx-auto text-center pt-16">
+        <div class="title-with-icon">
+            <i class="fas fa-users text-5xl text-red-600"></i>
+            <h1 class="text-5xl font-bold text-red-600">For Community</h1>
+        </div>
+        <p class="text-xl mt-4">Join, Engage, and Thrive with Thundra Music!</p>
+        <br><br>
+
+        <section class="my-8 max-w-5xl mx-auto">
+            <h2 class="text-3xl font-semibold mb-6">Your Rewards and Opportunities</h2>
+            <p class="text-lg mb-6">Thundra Music rewards your every move! The more you engage, the more you earn, starting with 15 XP per action—inviting friends (doubles with each friend’s join), sharing your referral link, listening to music, liking or downloading tracks, joining Chat & Group Spaces, buying subscriptions or Thundra Ads, participating in Thundra Market, or reselling artist tickets. Earn ICE tokens based on your contribution level, pace, and loyalty, with earnings scaling as you rise through tiers.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1: Earn XP and ICE -->
+                <div class="feature-card">
+                    <i class="fas fa-gift text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Earn XP & ICE Tokens</h3>
+                    <p class="text-base mt-2">Accumulate 15 XP per interaction, with bonuses for inviting friends (e.g., 30 XP per friend who joins). ICE tokens reward your devotion, convertible for real value, and grow with your tier progression—loyalty pays off!</p>
+                </div>
+
+                <!-- Feature 2: Reselling with Flexibility -->
+                <div class="feature-card">
+                    <i class="fas fa-exchange-alt text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Resell with Web 2 Payments</h3>
+                    <p class="text-base mt-2">Resell artist tickets using PayPal, Visa, MasterCard, American Express, UnionPay, or Mobile Money via Flutterwave. Receive a QR code for payments, ticket printing, or sharing outside the ecosystem, maximizing your profit.</p>
+                </div>
+
+                <!-- Feature 3: Decentralized Moderation -->
+                <div class="feature-card">
+                    <i class="fas fa-balance-scale text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Become a Web 3 Moderator</h3>
+                    <p class="text-base mt-2">Join our decentralized moderation team to uphold free speech (barring drug promotion, pornography, or hate speech). Flag content for review—isolated during checks—requiring 10 moderator approvals to act, with non-moderator input possible. Earn rewards and guide the community.</p>
+                </div>
+
+                <!-- Feature 4: Moderator Benefits -->
+                <div class="feature-card">
+                    <i class="fas fa-medal text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Moderator Perks</h3>
+                    <p class="text-base mt-2">Enjoy rewards, direct Thundra Team interaction, artist guidance, and giveaways (with Admin approval). Training is provided, and selection hinges on devotion, engagement, loyalty, personality, and community love—prove your worth!</p>
+                </div>
+
+                <!-- Feature 5: Thundra Learning -->
+                <div class="feature-card">
+                    <i class="fas fa-graduation-cap text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Thundra Learning Hub</h3>
+                    <p class="text-base mt-2">Master the ecosystem with our all-in-one training space. Learn to maximize rewards, engage effectively, and grow your presence, tailored for both users and aspiring moderators.</p>
+                </div>
+
+                <!-- Feature 6: Staff Potential -->
+                <div class="feature-card">
+                    <i class="fas fa-user-tie text-3xl text-red-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold">Join the Thundra Team</h3>
+                    <p class="text-base mt-2">Top moderators may be invited (not requested) to join as Staff, embarking on a journey in the Blockchain & AI Revolution with enhanced roles and benefits.</p>
+                </div>
+            </div>
+
+            <p class="text-lg mt-6">Your engagement shapes our ecosystem! As you level up, your XP earnings grow, with ICE token rewards at the discretion of moderators and the Thundra Team. Embrace a fair, inclusive community where your voice matters.</p>
+        </section>
+        <br><br>
+
+        <div class="mt-16">
+            <a href="signup.php" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition electric-hover"><i class="fas fa-rocket mr-2"></i> Get Started</a>
+        </div>
+        <br><br>
+
+        <footer class="text-center text-sm py-4">
+            <div>
+                <a href="privacy.html" class="text-red-600 hover:underline mx-2">Privacy Policy</a>
+                <a href="conduct.html" class="text-red-600 hover:underline mx-2">Community Code of Conduct</a>
+                <a href="conditions.html" class="text-red-600 hover:underline mx-2">General User Terms & Conditions</a>
+                <a href="legal.html" class="text-red-600 hover:underline mx-2">Legal & Guidelines</a>
+            </div>
+            <div class="mt-4">
+                <button id="theme-toggle" class="text-red-600 hover:text-red-700 focus:outline-none">
+                    <i id="theme-icon" class="fas fa-moon text-2xl"></i>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+            document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+        }
+
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            if (document.body.classList.contains('dark')) {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                document.body.classList.remove('dark');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        }
+
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = window.innerWidth < 768 ? 30 : 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 10;
+                this.speedX = (Math.random() * 2 - 1) * 0.5;
+                this.speedY = (Math.random() * 2 - 1) * 0.5;
+                this.directionY = Math.random() > 0.5 ? 1 : -1;
+                this.text = '♪';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY * this.directionY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillStyle = '#ff0000';
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles.forEach(particle => {
+                particle.x = Math.random() * canvas.width;
+                particle.y = Math.random() * canvas.height;
+            });
+        });
+    </script>
+</body>
+</html>

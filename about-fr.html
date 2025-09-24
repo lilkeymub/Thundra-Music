@@ -1,0 +1,101 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thundra Music - À propos de nous</title>
+    <link rel="icon" type="image/x-icon" href="THUNDRA MUSIC.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body class="bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-100 dark:bg-gray-900 p-4 flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-red-600"><i class="fas fa-music mr-2"></i> Thundra Music</h2>
+        <div>
+            <a href="welcome.html" class="text-red-600 hover:underline mx-2"><i class="fas fa-home mr-2"></i> Accueil</a>
+            <a href="about.html" class="text-red-600 hover:underline mx-2"><i class="fas fa-info-circle mr-2"></i> À propos</a>
+            <a href="login.html" class="text-red-600 hover:underline mx-2"><i class="fas fa-sign-in-alt mr-2"></i> Se connecter</a>
+            <a href="signup.html" class="text-red-600 hover:underline mx-2"><i class="fas fa-user-plus mr-2"></i> S'inscrire</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto text-center py-8">
+        <!-- About Section -->
+        <section class="my-12">
+            <h1 class="text-5xl font-bold text-red-600">À propos de nous</h1>
+            <p class="text-lg mt-4 max-w-3xl mx-auto">Rencontrez l'équipe derrière Thundra Music, dédiée à la démocratisation de l'industrie de la musique.</p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mt-8 max-w-6xl mx-auto">
+                <div class="bg-gray-200 dark:bg-gray-800 p-6 rounded">
+                    <h3 class="text-xl font-semibold">Lilian Mubandilwa</h3>
+                    <p class="text-sm mt-2">PDG et Responsable de la Technologie</p>
+                    <p class="text-sm mt-2">Fort d'une formation en génie logiciel et en développement web, et passionné par la blockchain, les cryptomonnaies et les technologies d'IA, Lilian est bien placé pour révolutionner l'industrie de la blockchain et de l'IA grâce à la musique, en la démocratisant et en la rendant accessible à des millions de personnes dans le monde grâce à une solution hybride. Il a également travaillé sur un framework facilitant l'intégration massive des acteurs du Web 2 au monde du Web 3.</p>
+                </div>
+                <div class="bg-gray-200 dark:bg-gray-800 p-6 rounded">
+                    <h3 class="text-xl font-semibold">Jedidia Efongo</h3>
+                    <p class="text-sm mt-2">Responsable Marketing & Communication</p>
+                    <p class="text-sm mt-2">Fort d'une solide expertise en impact et promotion sur les réseaux sociaux, il a développé de nombreuses communautés sur des plateformes comme Facebook et Instagram pendant plus de trois ans, les aidant à interagir et à engager quotidiennement, et à intégrer de nombreux membres à ses groupes et forums. Il envisage désormais de collaborer avec Thundra Music pour apporter ce même niveau d'engagement et d'intégration à la nouvelle révolution musicale décentralisée.</p>
+                </div>
+                <div class="bg-gray-200 dark:bg-gray-800 p-6 rounded">
+                    <h3 class="text-xl font-semibold">Isaac Kanembwe</h3>
+                    <p class="text-sm mt-2">Responsable de Produits</p>
+                    <p class="text-sm mt-2">Il était impatient de se lancer dans un projet aussi ambitieux. Passionné de modèles d'IA et de technologies connexes, il possède une connaissance approfondie de l'entraînement et de la catégorisation des modèles, même s'il n'est pas encore un bon codeur. Il a développé des produits exceptionnels grâce à l'IA et est désormais impatient d'apporter le même impact à l'écosystème Thundra Music afin de démocratiser la musique pour tous.</p>
+                </div>
+                <div class="bg-gray-200 dark:bg-gray-800 p-6 rounded">
+                    <h3 class="text-xl font-semibold">Loïc Mubandilwa</h3>
+                    <p class="text-sm mt-2">Responsable de la Rédaction</p>
+                    <p class="text-sm mt-2">Passionné d'écriture, de montage et de création de contenu depuis son enfance, il rédige des textes et des scénarios stratégiques, aujourd'hui utilisés dans les domaines cinématographique et technologique, pour enrichir les contenus et les différents scénarios. Il souhaite transmettre le même esprit et le même impact à Thundra Music, et ce, à tous les niveaux.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer with Policy Links -->
+    <footer class="text-center text-sm py-4">
+        <a href="privacy.html" class="text-red-600 hover:underline mx-2">Politique de confidentialité</a>
+        <a href="conduct.html" class="text-red-600 hover:underline mx-2">Code de Conduite de la Communauté</a>
+        <a href="conditions.html" class="text-red-600 hover:underline mx-2">Conditions Générales d'Utilisation</a>
+    </footer>
+</body>
+</html>
