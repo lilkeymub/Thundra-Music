@@ -21,17 +21,18 @@ if (isset($_SESSION['username'])) {
     exit();
 }
 
-define('STYTCH_PROJECT_ID', 'project-live-a9260d05-5dbe-4c03-8eab-d56c1f202890');
-define('STYTCH_SECRET', 'secret-live-kydsqMHf1leDE2iKqTobSbDrIvZV0hh8G1U=');
-define('STYTCH_PUBLIC_TOKEN', 'public-token-live-f6fd17b9-bcd4-41f9-bddf-d858e30bb3e4');
-define('WALLET_CONNECT_PROJECT_ID', 'acf0ba32fd83fd3d60552342707cd3dc');
-define('CONTRACT_ADDRESS', '0xc335Df7C25b72eEC661d5Aa32a7c2B7b2a1D1874');
+define('STYTCH_PROJECT_ID', '');
+define('STYTCH_SECRET', '');
+define('STYTCH_PUBLIC_TOKEN', '');
+define('WALLET_CONNECT_PROJECT_ID', '');
+define('CONTRACT_ADDRESS', '');
 
-$host = 'sql209.infinityfree.com';
-$dbname = 'if0_38852888_thundramusic';
-$username = 'if0_38852888';
-$password = 'Malinga7';
-$port = 3306;
+// Database connection
+$host = '';
+$dbname = '';
+$username = '';
+$password = '';
+$port = ;
 
 $conn = new mysqli($host, $username, $password, $dbname, $port);
 if ($conn->connect_error) {
@@ -479,4 +480,5 @@ $conn->close();
         }
     </script>
 </body>
+
 </html>
