@@ -18,11 +18,11 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Connexion à la base de données avec mysqli
-$host = 'sql209.infinityfree.com';
-$dbname = 'if0_38852888_thundramusic';
-$username = 'if0_38852888';
-$password = 'Malinga7';
-$port = 3306;
+$host = '';
+$dbname = '';
+$username = '';
+$password = '';
+$port = ;
 
 $conn = new mysqli($host, $username, $password, $dbname, $port);
 
@@ -194,4 +194,5 @@ $conn->close();
         }
     </script>
 </body>
+
 </html>
