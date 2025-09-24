@@ -27,12 +27,12 @@ define('STYTCH_PUBLIC_TOKEN', 'public-token-live-f6fd17b9-bcd4-41f9-bddf-d858e30
 define('WALLET_CONNECT_PROJECT_ID', 'acf0ba32fd83fd3d60552342707cd3dc');
 define('CONTRACT_ADDRESS', '0xc335Df7C25b72eEC661d5Aa32a7c2B7b2a1D1874');
 
-// Database connection
-$host = 'sql209.infinityfree.com';
-$dbname = 'if0_38852888_thundramusic';
-$username = 'if0_38852888';
-$password = 'Malinga7';
-$port = 3306;
+/// Database connection
+$host = '';
+$dbname = '';
+$username = '';
+$password = '';
+$port = ;
 
 $conn = new mysqli($host, $username, $password, $dbname, $port);
 if ($conn->connect_error) {
@@ -640,4 +640,5 @@ $conn->close();
         });
     </script>
 </body>
+
 </html>
