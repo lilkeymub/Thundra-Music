@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
@@ -7,7 +7,6 @@ interface Wallet {
   wallet_address: string;
   thdr_balance: number;
   usdt_balance: number;
-  ion_balance: number;
 }
 
 interface Transaction {
@@ -45,10 +44,13 @@ export function useWallet() {
         .maybeSingle();
 
       if (!error && data) {
-        setWallet(data);
+        setWallet({
+          wallet_address: data.wallet_address,
+          thdr_balance: data.thdr_balance,
+          usdt_balance: data.usdt_balance,
+        });
       }
 
-      // Fetch transactions
       const { data: txData } = await supabase
         .from('wallet_transactions')
         .select('*')
@@ -56,14 +58,32 @@ export function useWallet() {
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (txData) {
-        setTransactions(txData);
-      }
-
+      if (txData) setTransactions(txData);
       setLoading(false);
     };
 
     fetchWallet();
+
+    const channel = supabase
+      .channel(`wallet-${user.id}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_wallets',
+        filter: `user_id=eq.${user.id}`
+      }, (payload) => {
+        if (payload.new) {
+          const d = payload.new as any;
+          setWallet({
+            wallet_address: d.wallet_address,
+            thdr_balance: d.thdr_balance,
+            usdt_balance: d.usdt_balance,
+          });
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
   const sendTokens = async (
@@ -74,251 +94,161 @@ export function useWallet() {
   ) => {
     if (!user || !wallet) return false;
 
-    // Find recipient
-    let recipientId: string | null = null;
+    let toAddress: string | null = null;
 
     if (identifierType === 'wallet_address') {
-      const { data } = await supabase
-        .from('user_wallets')
-        .select('user_id')
-        .eq('wallet_address', toIdentifier)
-        .maybeSingle();
-      recipientId = data?.user_id || null;
-    } else if (identifierType === 'username') {
-      const { data } = await supabase
-        .from('profiles')
-        .select('user_id')
-        .eq('username', toIdentifier)
-        .maybeSingle();
-      recipientId = data?.user_id || null;
+      toAddress = toIdentifier;
     } else {
+      const field = identifierType === 'username' ? 'username' : 'email';
       const { data } = await supabase
         .from('profiles')
-        .select('user_id')
-        .eq('email', toIdentifier)
+        .select('web3_wallet_address')
+        .eq(field, toIdentifier)
         .maybeSingle();
-      recipientId = data?.user_id || null;
+      toAddress = data?.web3_wallet_address || null;
     }
 
-    if (!recipientId) {
-      toast({
-        title: 'Recipient not found',
-        description: 'Please check the identifier and try again.',
-        variant: 'destructive',
-      });
+    if (!toAddress) {
+      toast({ title: 'Recipient not found', variant: 'destructive' });
       return false;
     }
 
-    // Check balance
-    const balanceKey = `${tokenSymbol.toLowerCase()}_balance` as keyof Wallet;
-    const currentBalance = Number(wallet[balanceKey]) || 0;
-
-    if (currentBalance < amount) {
-      toast({
-        title: 'Insufficient balance',
-        description: `You don't have enough ${tokenSymbol} to complete this transaction.`,
-        variant: 'destructive',
+    try {
+      // Send on-chain via edge function
+      const { data, error } = await supabase.functions.invoke('blockchain', {
+        body: {
+          action: 'send_tokens',
+          from_user_id: user.id,
+          from_address: wallet.wallet_address,
+          to_address: toAddress,
+          amount,
+          token: tokenSymbol,
+        },
       });
-      return false;
-    }
 
-    // Perform transfer
-    const { error: deductError } = await supabase
-      .from('user_wallets')
-      .update({ [balanceKey]: currentBalance - amount })
-      .eq('user_id', user.id);
+      if (error) throw error;
 
-    if (deductError) {
+      toast({
+        title: 'Transfer successful',
+        description: `Sent ${amount} ${tokenSymbol} on-chain. TX: ${data.tx_hash?.slice(0, 10)}...`,
+      });
+
+      // Sync balance
+      await supabase.functions.invoke('blockchain', {
+        body: { action: 'sync_balance', user_id: user.id, wallet_address: wallet.wallet_address },
+      });
+
+      return true;
+    } catch (err: any) {
       toast({
         title: 'Transaction failed',
-        description: 'Please try again later.',
+        description: err.message || 'Please try again.',
         variant: 'destructive',
       });
       return false;
     }
-
-    // Add to recipient
-    const { data: recipientWallet } = await supabase
-      .from('user_wallets')
-      .select('*')
-      .eq('user_id', recipientId)
-      .maybeSingle();
-
-    if (recipientWallet) {
-      const recipientBalance = Number(recipientWallet[balanceKey]) || 0;
-      await supabase
-        .from('user_wallets')
-        .update({ [balanceKey]: recipientBalance + amount })
-        .eq('user_id', recipientId);
-    }
-
-    // Record transaction
-    await supabase.from('wallet_transactions').insert({
-      from_user_id: user.id,
-      to_user_id: recipientId,
-      transaction_type: 'transfer',
-      token_symbol: tokenSymbol,
-      amount,
-      fee: 0,
-      status: 'completed',
-    });
-
-    toast({
-      title: 'Transfer successful',
-      description: `Sent ${amount} ${tokenSymbol} successfully.`,
-    });
-
-    // Refresh wallet
-    const { data: updatedWallet } = await supabase
-      .from('user_wallets')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (updatedWallet) {
-      setWallet(updatedWallet);
-    }
-
-    return true;
   };
 
   const convertTokens = async (
     fromToken: string,
     toToken: string,
     amount: number
-  ) => {
+  ): Promise<boolean> => {
     if (!user || !wallet) return false;
 
-    // Try different pool name combinations
-    const poolNames = [
-      [fromToken, toToken].sort().join('_'),
-      `${fromToken}_${toToken}`,
-      `${toToken}_${fromToken}`
-    ];
+    // For conversion, we use treasury as intermediary
+    // User sends fromToken to treasury, treasury sends toToken back
+    const { data: prices } = await supabase.from('token_prices').select('*');
+    const getTokenPrice = (symbol: string): number => {
+      const found = prices?.find(p => p.token_symbol === symbol);
+      if (found) return found.price_usd;
+      if (symbol === 'USDT') return 1.00;
+      if (symbol === 'THDR') return 0.001;
+      return 0.50;
+    };
 
-    let pool = null;
-    for (const poolName of poolNames) {
-      const { data } = await supabase
-        .from('liquidity_pools')
-        .select('*')
-        .eq('pool_name', poolName)
-        .maybeSingle();
-      
-      if (data) {
-        pool = data;
-        break;
-      }
-    }
+    const fromPrice = getTokenPrice(fromToken);
+    const toPrice = getTokenPrice(toToken);
+    const feeRate = 0.003;
+    const amountAfterFee = amount * (1 - feeRate);
+    const outputAmount = (amountAfterFee * fromPrice) / toPrice;
+    const fee = amount * feeRate;
 
-    if (!pool) {
-      toast({
-        title: 'Pool not found',
-        description: 'This trading pair is not available.',
-        variant: 'destructive',
+    try {
+      // Step 1: User sends fromToken to treasury
+      const { error: sendError } = await supabase.functions.invoke('blockchain', {
+        body: {
+          action: 'send_tokens',
+          from_user_id: user.id,
+          from_address: wallet.wallet_address,
+          to_address: '0x38bc74e79b6e7d66b594124a6ccc92cef0974404', // Treasury
+          amount,
+          token: fromToken,
+        },
       });
-      return false;
-    }
+      if (sendError) throw sendError;
 
-    // Check balance
-    const fromBalanceKey = `${fromToken.toLowerCase()}_balance` as keyof Wallet;
-    const toBalanceKey = `${toToken.toLowerCase()}_balance` as keyof Wallet;
-    const currentFromBalance = Number(wallet[fromBalanceKey]) || 0;
-
-    if (currentFromBalance < amount) {
-      toast({
-        title: 'Insufficient balance',
-        description: `You don't have enough ${fromToken}.`,
-        variant: 'destructive',
+      // Step 2: Treasury sends toToken to user
+      const { error: receiveError } = await supabase.functions.invoke('blockchain', {
+        body: {
+          action: 'transfer_from_treasury',
+          to_address: wallet.wallet_address,
+          amount: outputAmount,
+          token: toToken,
+          description: 'conversion',
+          user_id: user.id,
+        },
       });
-      return false;
-    }
+      if (receiveError) throw receiveError;
 
-    // Calculate output using constant product formula (x * y = k)
-    const reserveFrom = pool.token_a === fromToken ? Number(pool.reserve_a) : Number(pool.reserve_b);
-    const reserveTo = pool.token_a === toToken ? Number(pool.reserve_a) : Number(pool.reserve_b);
-    
-    const amountWithFee = amount * (1 - Number(pool.fee_rate));
-    const outputAmount = (amountWithFee * reserveTo) / (reserveFrom + amountWithFee);
+      // Step 3: Burn the fee on-chain
+      await supabase.functions.invoke('blockchain', {
+        body: {
+          action: 'burn_tokens',
+          amount: fee,
+          burn_type: 'conversion_fee',
+          source_activity: 'token_swap',
+          user_id: user.id,
+          token: fromToken,
+        },
+      });
 
-    // Update balances
-    const { error } = await supabase
-      .from('user_wallets')
-      .update({
-        [fromBalanceKey]: currentFromBalance - amount,
-        [toBalanceKey]: (Number(wallet[toBalanceKey]) || 0) + outputAmount,
-      })
-      .eq('user_id', user.id);
+      // Record fee
+      await supabase.from('fee_collections').insert({
+        activity_type: 'conversion',
+        original_amount: amount,
+        fee_amount: fee,
+        token_symbol: fromToken,
+        burned_amount: fee,
+        partnership_pool_amount: 0,
+      });
 
-    if (error) {
+      await supabase.from('price_activities').insert([
+        { activity_type: 'swap', token_symbol: fromToken, amount, direction: 'sell' },
+        { activity_type: 'swap', token_symbol: toToken, amount: outputAmount, direction: 'buy' },
+        { activity_type: 'burn', token_symbol: fromToken, amount: fee, direction: 'burn' },
+      ]);
+
+      // Sync balance
+      await supabase.functions.invoke('blockchain', {
+        body: { action: 'sync_balance', user_id: user.id, wallet_address: wallet.wallet_address },
+      });
+
+      toast({
+        title: 'Conversion successful',
+        description: `Converted ${amount.toFixed(4)} ${fromToken} to ${outputAmount.toFixed(4)} ${toToken} on-chain (0.3% fee burned)`,
+      });
+
+      return true;
+    } catch (err: any) {
       toast({
         title: 'Conversion failed',
-        description: 'Please try again later.',
+        description: err.message || 'Please try again.',
         variant: 'destructive',
       });
       return false;
     }
-
-    // Update liquidity pool
-    const newReserveFrom = reserveFrom + amount;
-    const newReserveTo = reserveTo - outputAmount;
-
-    await supabase
-      .from('liquidity_pools')
-      .update({
-        reserve_a: pool.token_a === fromToken ? newReserveFrom : newReserveTo,
-        reserve_b: pool.token_b === fromToken ? newReserveFrom : newReserveTo,
-      })
-      .eq('id', pool.id);
-
-    // Record fee and burn
-    const fee = amount * Number(pool.fee_rate);
-    await supabase.from('fee_collections').insert({
-      activity_type: 'conversion',
-      original_amount: amount,
-      fee_amount: fee,
-      token_symbol: fromToken,
-      burned_amount: fee,
-      partnership_pool_amount: 0,
-    });
-
-    await supabase.from('burn_records').insert({
-      token_symbol: fromToken,
-      amount: fee,
-      burn_type: 'conversion_fee',
-      source_activity: 'token_swap',
-    });
-
-    // Record price activity to affect token prices (table created dynamically)
-    await supabase.from('price_activities' as any).insert([
-      { activity_type: 'swap', token_symbol: fromToken, amount, direction: 'sell' },
-      { activity_type: 'swap', token_symbol: toToken, amount: outputAmount, direction: 'buy' },
-      { activity_type: 'burn', token_symbol: 'THDR', amount: fee, direction: 'burn' }
-    ] as any);
-
-    toast({
-      title: 'Conversion successful',
-      description: `Converted ${amount} ${fromToken} to ${outputAmount.toFixed(4)} ${toToken}.`,
-    });
-
-    // Refresh wallet
-    const { data: updatedWallet } = await supabase
-      .from('user_wallets')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (updatedWallet) {
-      setWallet(updatedWallet);
-    }
-
-    return true;
   };
 
-  return {
-    wallet,
-    transactions,
-    loading,
-    sendTokens,
-    convertTokens,
-  };
+  return { wallet, transactions, loading, sendTokens, convertTokens };
 }
